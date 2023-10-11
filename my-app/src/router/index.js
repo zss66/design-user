@@ -45,6 +45,27 @@ const router = createRouter({
             name: 'mine',
             path: '/mine',
             component: () => import('../views/mine.vue')
+        },
+        {
+            name: 'login',
+            path: '/login',
+            component: () => import('../components/login/index.vue'),
+
+        },
+        {
+            name: 'zhuce',
+            path: '/zhuce',
+            component: () => import('../components/login/newuser.vue')
+        },
+        {
+            name: 'find',
+            path: '/find',
+            component: () => import('../components/findpass/findpsw.vue'),
+            children: [{
+                name: 'newpsd',
+                path: 'newpsd',
+                component: () => import('../components/findpass/newpsd.vue'),
+            }]
         }
     ]
 })

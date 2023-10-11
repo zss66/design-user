@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-
 import http from '../utils/request'
 export const usedata = defineStore('data', {
     state: () => ({
@@ -12,7 +11,8 @@ export const usedata = defineStore('data', {
         topBar: '',
         swiper: '',
         icon: '',
-        like: '',
+        // like: '',
+        likes: '',
         showitem: '',
         search: [],
         //创建list-tab的active
@@ -26,16 +26,18 @@ export const usedata = defineStore('data', {
     }
     ,
     actions: {
-        async getdata() {
+        getdata() {
             http.get('api/data').then(res => {
                 this.topBar = res.data.data.topBar;
                 this.swiper = res.data.data.swiper;
                 this.icon = res.data.data.icon;
                 this.showitem = res.data.data.recomnd;
+                this.likes = res.data.data.like;
                 // this.like = res.data.data.like;
             })
 
         },
+        //查询商品接口
         dbconnect(result) {
             http.get('api/goods/shoplist', {
                 params: {
@@ -43,10 +45,18 @@ export const usedata = defineStore('data', {
                     name: result
                 }
             }).then(res => {
-                this.like = res.data.data;
+                this.search = res.data.data;
+                console.log(res);
             })
-        }
+        },
+
     },
+    //获取分类数据接口
+    items() {
+        http.get('item').then(res => {
+            console.log(res);
+        })
+    }
     // async fetchData() {
     //     // 使用HTTP请求或其他方式从后端获取数据
     //     const response = await fetch('/api/backend-data');

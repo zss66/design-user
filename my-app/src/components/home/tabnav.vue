@@ -7,6 +7,7 @@
 <script setup>
 import { usedata } from '../../pinia/data'
 const datastore = usedata();
+
 </script>
 <style scoped>
 .van-tabs {

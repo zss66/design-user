@@ -1,13 +1,13 @@
 <template>
     <div class="contain">
         <img src="../../assets/images/logo.png" alt="logo">
-        <div style="display:flex ;align-items: center;">
-            <input type="text" placeholder="搜索区">
+        <span>移动项目</span>
+        <div style="display: flex; align-items: center; ">
             <van-button round type="success" @click="router.replace('/search')"> <van-icon name="search" /></van-button>
-
+            <van-icon name="chat-o" style="margin-left:15px ;" />
         </div>
 
-        <van-icon name="chat-o" />
+
     </div>
 </template>
 <script setup>
@@ -20,18 +20,14 @@ import router from '../../router';
     height: 50px;
     padding: 0 10px;
     background-image: linear-gradient(90deg, #a9d9eb, 50%, #cdc6ce);
-    justify-content: space-around;
+    justify-content: space-between;
 
 
-    input {
-        border-radius: 15px;
-        width: 150px;
-        height: 25px;
-        background-color: #fff;
-        text-indent: 0.5em;
+    span {
         font-size: 15px;
-        margin-right: 10px;
-        border: #cdc6ce;
+        letter-spacing: 3px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: 700;
     }
 
     .van-button {

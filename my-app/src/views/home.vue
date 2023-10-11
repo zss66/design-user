@@ -8,9 +8,13 @@
         <div v-if="data.active == 0">
             <swiper></swiper>
             <icons></icons>
-            <smalltitle></smalltitle>
+            <smalltitle :smalltitle="'爆款推荐'">
+
+            </smalltitle>
             <showitem></showitem>
-            <smalltitle></smalltitle>
+            <smalltitle :smalltitle="'猜你喜欢'">
+
+            </smalltitle>
             <likev></likev>
         </div>
     </div>
@@ -27,22 +31,21 @@ import Header from '../components/home/header.vue';
 import likev from '../components/home/like.vue';
 import Tabnav from '../components/home/tabnav.vue';
 import { usedata } from '../pinia/data';
+import { onBeforeUnmount } from 'vue';
+import { onMounted, ref } from 'vue';
+const scrollTop = ref(0);
 
+// 在组件销毁前保存滚动位置
+onBeforeUnmount(() => {
+    scrollTop.value = window.pageYOffset || document.documentElement.scrollTop;
+});
+
+// 在组件初始化时将保存的滚动位置应用到页面
+onMounted(() => {
+    window.scrollTo(0, scrollTop.value);
+});
 const data = usedata();
 data.getdata();
-
-
-// http.get('api/data').then(res => {
-//     console.log(res);
-//     data.getdata(res);
-//     data.bol = true;
-//     // state.topBar = res.data.data.topBar;
-//     // state.swiper = res.data.data.swiper;
-//     // state.icon = res.data.data.icon;
-//     // state.showitem = res.data.data.recomnd;
-//     // state.like = res.data.data.like;
-
-// })
 </script>
 <style lang="less" scoped>
 .van-loading--vertical {

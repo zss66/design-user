@@ -3,6 +3,6 @@ let connection = mysql.createConnection({
     host: "localhost",
     user: 'root',
     password: '123456',
-    database: 'vue_node'
+    database: 'my_db'
 });
 module.exports = connection;

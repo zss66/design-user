@@ -15,11 +15,11 @@
                 </div>
             </div>
         </div>
-        <like></like>
+        <likes></likes>
     </div>
 </template>
 <script setup>
-import like from '../home/like.vue';
+import likes from '../home/likes.vue'
 </script>
 <style lang="less" scoped>
 .bar {

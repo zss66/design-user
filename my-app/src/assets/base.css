@@ -6,6 +6,18 @@ body {
     background-color: #f5f5f5;
 }
 
+header-bar {
+    box-sizing: border-box;
+    width: 100vw;
+    display: flex;
+    padding: 0 10px;
+    height: 46px;
+    align-items: center;
+    background-color: #b46262;
+    justify-content: space-between;
+    font-size: 20px;
+}
+
 html,
 body,
 #app {

@@ -6,17 +6,7 @@ import pxtorem from 'postcss-pxtorem'
 import path from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
-  // devServer: {
-  //   proxy: {
-  //     '/api': {
-  //       target: "http://localhost:3000",
-  //       changeOrigin: true,
-  //       pathRewrite: {
-  //         '^/api': '/api'
-  //       }
-  //     }
-  //   },
-  // },
+
   server: {
     // http://localhost:5173/api/login -> http://www.test.com/login
     proxy: {
@@ -37,7 +27,21 @@ export default defineConfig({
 
   },
 
-  plugins: [vue(), Components({
+  optimizeDeps: {
+    // 排除自定义元素的解析
+    exclude: ['header-bar']
+  }
+
+  ,
+
+  plugins: [vue({
+    template: {
+      compilerOptions: {
+        // treat all tags with a dash as custom elements
+        isCustomElement: (tag) => tag.includes('header-bar')
+      }
+    }
+  }), Components({
     resolvers: [VantResolver()],
   })],
   css: {

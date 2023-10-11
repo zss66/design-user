@@ -1,8 +1,12 @@
 <template>
     <div class="contain">
-        <span>爆款推荐</span>
+        <span>{{ smalltitle }}</span>
+
     </div>
 </template>
+<script setup>
+const props = defineProps(['smalltitle'])
+</script>
 <style  scoped>
 span::before,
 span::after {
@@ -14,9 +18,10 @@ span::after {
 }
 
 .contain {
-
+    font-size: 20px;
     margin: 5px 0;
     width: 100%;
+    font-weight: 700;
     text-align: center;
     font-family: '微软雅黑'
 }

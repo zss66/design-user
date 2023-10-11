@@ -1,15 +1,23 @@
 <template>
     <headervue></headervue>
     <div class="container">
-        <van-sticky>
+        <van-sticky class="left">
             <van-sidebar v-model="active">
-                <van-sidebar-item :title="item.name" v-for="item in active1" :key="item.id" @click="scrollToTab(item.id)" />
+                <van-sidebar-item :title="item.name" v-for="item in items" :key="item.id" @click="scrollToTab(item.id)" />
             </van-sidebar>
         </van-sticky>
-        <van-button @click="bt">ac</van-button>
-        <div style="margin-left: 100px;">
-            <div class="block" v-for="item in active1" :key="item.id" :id="item.id">
-                hahha
+        <div style="padding-bottom: 50vh;" class="right">
+
+            <div class="blocks" v-for="item in items" :key="item.id" :id="item.id">
+                <smalltitle :smalltitle="item.name" class="title">
+                </smalltitle>
+                <div class="lists">
+                    <div class="list" v-for="listitem in item.data[0].list">
+                        <img :src="listitem.imgUrl" alt="图片">
+                        <span>{{ listitem.name }}</span>
+                    </div>
+
+                </div>
             </div>
         </div>
     </div>
@@ -21,117 +29,60 @@
 import headervue from '../components/home/header.vue'
 import Footer from '../components/footer.vue';
 import { usedata } from '../pinia/data';
-import { ref, onMounted, watch } from 'vue';
-const active1 = ref([
-    {
-        id: 1,
-        name: 'item1'
-    },
-    {
-        id: 2,
-        name: 'item2'
-    },
-    {
-        id: 3,
-        name: 'item3'
-    },
-    {
-        id: 4,
-        name: 'item4'
-    },
-    {
-        id: 5,
-        name: 'item5'
-    },
-    {
-        id: 6,
-        name: 'item6'
-    },
-]);
+import smalltitle from '../components/home/smalltitle.vue';
+import { ref } from 'vue';
+import http from '../utils/request';
+import { onUpdated, onBeforeUnmount } from 'vue';
+import { onBeforeRouteLeave } from 'vue-router';
+const items = ref('')
+http.get('item').then(res => {
+    console.log(res.data.data[0].data[0].list);
+    console.log(res.data.data);
+    items.value = res.data.data;
+
+})
 const active = ref(0);
 const high = [0];
-// 监听元素是否在屏幕中消失
-// const isVisible = ref(false);
-// const observer = new IntersectionObserver((entries) => {
-//     entries.forEach((entry) => {
-//         if (!entry.isIntersecting) {
-//             // 元素离开视窗
-//             const target = entry.target;
-//             // 进行其他操作，比如打印消失元素的信息
-//             console.log('消失元素:', target);
-//         }
-//     });
-// });
-// let lastScrollTop = 0;
-// //
-// var position = 0
-window.addEventListener('scroll', function () {
+const handlelisten = function () {
     const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
     high.forEach((item, index) => {
         if (currentScrollTop >= item && currentScrollTop < high[index + 1]) {
             active.value = index
+            console.log(active.value);
         }
     })
-});
-// if (active.value < 0) {
-//     active.value = 0
-// } else if (active.value > 6) {
-//     active.value = 6
-// }
-// const observer = new IntersectionObserver((entries) => {
-//     entries.forEach((entry, index) => {
-//         if (!entry.isIntersecting) {
-//             // 元素离开视窗
-//             if (position == 0) {
-//                 ++active.value
-//             }
-//             else {
-//                 --active.value
-//             }
-//             const target = entry.target;
-//             // 进行其他操作，比如打印消失元素的信息
-//             console.log('消失元素:', target, index);
-//             // usedata().list_act = index;
-//         }
-//     });
-// });
-// const bt = () => {
+}
+onBeforeRouteLeave((to, from, next) => {
+    window.removeEventListener('scroll', handlelisten);
 
-// }
-// watch(active, (newl) => {
-//     const element = document.getElementById(newl + 1)
-//     // 执行对每个元素的操作 
-//     observer.observe(element)
-//     console.log(active.value);
-//     console.log(newl);
-// })
-onMounted(() => {
-    // const element = document.getElementById(usedata().list_act + 1)
-    // // 执行对每个元素的操作 
-    // observer.observe(element)
-    let height = 0
-    var elements = document.getElementsByClassName("block");
-    [...elements].forEach((item) => {
-        height = height + item.clientHeight
-        high.push(height)
-    })
-    console.log([...elements]);
-    console.log(high);
-
+    next();
 })
 
+onUpdated(() => {
+    window.addEventListener('scroll', handlelisten);
+    let height = 0
+    var elements = document.getElementsByClassName("blocks");
+    if (high.length == 1) {
+        [...elements].forEach((item) => {
+            height = height + item.clientHeight
+            high.push(height)
+        })
+        console.log([...elements]);
+        console.log(high);
+    }
 
-// var height = element.clientHeight;
-// console.log(height);
+
+});
+
 
 //点击tab标签，滑动到对应位置
 const scrollToTab = (id) => {
     const item = document.getElementById(id);
-    console.log(item.clientHeight);
+    console.log(id);
     // observer.observe(item)
     if (item) {
         item.scrollIntoView({
-            behavior: 'smooth',
+            behavior: 'auto',
             block: 'start'
         });
     }
@@ -141,19 +92,52 @@ const scrollToTab = (id) => {
 .container {
     display: flex;
 
-
-
-    .block {
-        height: 50vh;
-        background-color: aquamarine;
-        margin-bottom: 20px;
+    .left {
+        flex: 2.2;
+        z-index: 0 !important;
     }
 
+    .right {
+        flex: 7.8
+    }
 
+    .blocks {
+        margin-bottom: 20px;
+
+        .title {
+            margin-bottom: 20px;
+        }
+
+        .lists {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
+            grid-gap: 10px;
+        }
+
+        .list {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+            }
+
+            span {
+                font-size: 10px;
+                text-align: center;
+            }
+        }
+    }
 }
 
-.van-sidebar {
+.van-sticky {
     height: 90vh;
-    border-right: 1px solid red;
+}
+
+.footer {
+    z-index: 100;
 }
 </style>

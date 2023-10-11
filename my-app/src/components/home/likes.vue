@@ -1,5 +1,5 @@
 <template>
-    <div class="contain" v-if="usedata().likes == ''">
+    <div class="contain" v-if="usedata().search == []">
         <img src="../../assets/images/like.jpeg" alt="">
         <div class="miaoshu">
             <van-text-ellipsis content="text" />
@@ -8,7 +8,7 @@
     </div>
 
     <div v-else class="contains">
-        <div class="contain" v-for="(item, index) in usedata().likes.data" :key="index">
+        <div class="contain" v-for="(item, index) in usedata().search" :key="index">
             <img :src=item.imgUrl alt="png">
             <div class="miaoshu">
                 <van-text-ellipsis :content=item.name />
@@ -19,7 +19,6 @@
 </template>
 <script setup>
 import { usedata } from '../../pinia/data';
-
 </script>
 <style lang="less" scoped>
 .contains {
