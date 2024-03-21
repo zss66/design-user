@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/item', itemRouter);
+app.use('/api/item', itemRouter);
 app.use('/token', tokenRouter);
 //设置允许跨域
 app.use(function (req, res, next) {

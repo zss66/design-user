@@ -2,12 +2,14 @@
     <!-- 固定头部文件 -->
 
     <!-- 设置flex属性 -->
-    <div style="width: 100vw;position: fixed; " class="header">
-        <!-- 不同时刻显示的内容 -->
+    <van-sticky>
         <div :style="{ opacity: 1 - op1 * 2 }" v-if="op1 < 0.4">
-            <van-nav-bar>
+            <van-nav-bar @click-left="router.go(-1)" @click-right="router.push('/')">
                 <template #left>
                     <van-icon name="arrow-left" size="20" class="icon1" />
+                </template>
+                <template #title>
+                    店铺详情
                 </template>
                 <template #right>
                     <van-icon name="wap-home-o" size="20" class="icon1" />
@@ -16,7 +18,7 @@
 
         </div>
         <div :style="{ opacity: op1 }" v-else>
-            <van-nav-bar>
+            <van-nav-bar @click-left="router.go(-1)" @click-right="router.push('/')">
                 <template #left>
                     <van-icon name="arrow-left" size="20" class="icon2" />
                 </template>
@@ -31,81 +33,136 @@
                 </template>
             </van-nav-bar>
         </div>
-    </div>
+    </van-sticky>
 
-
-
-    <div style="margin: 0 10px;">
-
+    <div>
         <div class="photo">
-            <van-swipe :autoplay="3000" lazy-render>
-                <van-swipe-item v-for="image in images" :key="image" style="margin-top: 50px;">
-                    <img :src="image" style="width: 95vw;margin: 0 auto;" />
+            <!-- 预留swipe板块 -->
+            <!-- <van-swipe :autoplay="3000" lazy-render>
+                <van-swipe-item v-for="image in shop().data[0].imgUrl" :key="image" style="margin-top: 50px;">
                 </van-swipe-item>
-            </van-swipe>
-        </div>
-        <h1 style="font-size: 0.5rem;">浙江花果香碧螺春2号</h1>
-        <p style="    font-size: 14px;
-    color: #999;
-    padding-top: 0.2rem;
-   ">口感鲜爽甘醇 韵味悠长 花果香浓郁.</p>
+            </van-swipe> -->
+            <!-- <img :src="shopinfo.data.data[0].imgUrl" style="width: 95vw;margin: 0 auto;" /> -->
+            <img src="../../assets/images/yuna.jpg" style="width: 100vw;margin: 0 auto;" />
 
-        <p class="o-t-price">
-            <span class="now">88</span>
-            <span class="o-t-spec">/ 150g</span>
-        </p>
-        <div class="original-price"><span>价格:</span><del>¥168</del></div>
+        </div>
+        <div
+            style="margin-top: -50px;position: relative;  background: #fff;z-index: 1;padding-top: 20px;border-radius: 20px;">
+            <van-sticky offset-top="49px">
+                <van-tabs v-model:active="active">
+                    <van-tab title="点餐">
+                    </van-tab>
+                    <van-tab title="商家">内容 4</van-tab>
+                </van-tabs>
+            </van-sticky>
+            <sideswiper></sideswiper>
+            <div style="font-size: 0.5rem;">{{ shopinfo.data.data[0].name }}</div>
+            <p style=" font-size: 14px;color: #999;padding-top: 0.2rem;">口感鲜爽甘醇 韵味悠长 花果香浓郁.</p>
+            <p class="o-t-price">
+                <span class="now">{{ shopinfo.data.data[0].price }}</span>
+                <span class="o-t-spec">/ 150g</span>
+            </p>
+            <div class="original-price"><span>价格:</span><del>¥168</del></div>
+
+
+
+
+
+        </div>
+
 
     </div>
-    <van-sticky position="bottom" style="position: fixed;bottom: 0;width: 100vw;">
+
+    <!-- 购买消息确认框 -->
+    <van-action-sheet v-model:show="show" :title="shopinfo.data.data[0].name">
+        <div style="display: flex;padding: 0 20px">
+            <img :src="shopinfo.data.data[0].imgUrl" alt="商品图片" style="width: 78px;height: 78px;">
+            <div style="font-size: 20px;padding-left: 15px;">
+                <p style="margin-bottom: 10px;">{{ shopinfo.data.data[0].price }}￥</p>
+                <p>库存 100件</p>
+
+            </div>
+        </div>
+        <van-stepper v-model="value" theme="round" button-size="22" disable-input
+            style="position: fixed;right: 20px;" />
+        <div class="content"></div>
+        <van-button type="danger" style="position: sticky;width: 100%;" @click="console.log(value)">确认</van-button>
+    </van-action-sheet>
+    <!-- 底部信息 -->
+    <van-sticky position="bottom" style="position: fixed;bottom: 0;width: 100vw; z-index: 2; background-color: #fff;">
         <div style="display: flex;justify-content: space-between; margin-left: 15px;">
             <div class="footicon">
                 <van-icon name="service-o" />
                 <span>客服</span>
             </div>
             <div class="footicon">
-                <van-icon name="service-o" />
-                <span>客服</span>
+                <van-icon name="cart-o" />
+                <span>购物车</span>
             </div>
             <div class="footicon">
-                <van-icon name="service-o" />
-                <span>客服</span>
+                <van-icon name="star-o" />
+                <span>收藏</span>
             </div>
             <div>
-                <van-button type="warning" style="padding: 0 15px;">加入购物车</van-button>
-                <van-button type="danger" style="padding: 0 15px;">立即购买
-                </van-button>
+                <van-button type="warning" @click="addcart" style="padding: 0 15px;border-radius: 0;">加入购物车</van-button>
+                <van-button type="danger" @click="buynow" style="padding: 0 15px;border-radius: 0;">立即购买</van-button>
             </div>
 
         </div>
     </van-sticky>
 </template>
 <script setup>
-import { onMounted, ref } from 'vue';
-const header = document.querySelector('.header')
-const onClickLeft = () => {
-    console.log('hahha');
-}
+import sideswiper from '../sideswiper/index.vue'
+import { showToast } from 'vant';
+import router from '../../router';
+import { ref } from 'vue';
+import http from '../../utils/request';
+import { shop } from '../../pinia/shop';
+import { userInfo } from '../../pinia/userinfo';
+import { onMounted } from 'vue';
+const show = ref(false);
+const value = ref(1)
+let shopinfo = shop()
+// 此数据为
 const active = ref(0)
-const images = [
-    'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg',
-    'https://fastly.jsdelivr.net/npm/@vant/assets/apple-2.jpeg',
-];
 //设置头部文件根据商品信息的高度而透明度渐变过程
 const op1 = ref(0)
-
 onMounted(() => {
     const photo = document.querySelector('.photo')
     const high = photo.clientHeight
     window.addEventListener('scroll', () => {
-
         const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
         op1.value = currentScrollTop / high
         op1.value > 1 ? op1.value = 1 : op1.value
     })
-    console.log(high);
 })
+//监听
 
+//加入购物车操作
+const addcart = () => {
+    if (userInfo().loginstatus) {
+        // http.get()
+        showToast('加入购物车成功！')
+        console.log("已经完成加入操作");
+        http.post('api/addcart', {
+            data: {
+                id: shopinfo.data.data[0].id,
+            }
+        },).then(res => console.log(res.data.data.msg))
+    }
+    else {
+        showToast('请先登录，再加入购物车！');
+        console.log('未登录');
+        setTimeout(() => {
+            router.push('/login');
+        }, 1000);
+        clearTimeout
+    }
+}
+//立即购买操作
+const buynow = () => {
+    show.value = true
+}
 </script>
 <style lang="less" scoped>
 * {
@@ -115,10 +172,16 @@ onMounted(() => {
 }
 
 
+.content {
+    padding: 16px 16px 160px;
+}
+
 .header {
+    z-index: 2;
+
     .icon1 {
         padding: 8px;
-        background-color: rgba(0, 0, 0, 0.3);
+        background-color: rgba(155, 155, 155, 0.3);
         border-radius: 50%;
     }
 

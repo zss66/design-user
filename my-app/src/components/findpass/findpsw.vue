@@ -1,6 +1,6 @@
 <template>
     <header-bar>
-        <van-icon name="arrow-left" />
+        <van-icon name="arrow-left" @click="router.back()" />
         <div>找回密码</div>
         <van-icon name="wap-home" />
     </header-bar>

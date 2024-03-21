@@ -1,33 +1,27 @@
 import { defineStore } from "pinia";
 import http from '../utils/request'
 export const userInfo = defineStore('userinfo', {
+    persist: true,
     state: () => ({
-        userInform: {},//用户详细数据
         token: null,
         loginstatus: false,//登录状态
         imgUrl: '',//用户头像
         nickname: '',//用户昵称
-
+        sex: 0,
+        tel: '',
+        logintime: Date,
     }),
     getters: {
-        local: (state) => {
-            let userinfo = JSON.parse(localStorage.getItem('userinfo'))
-            if (userinfo) {
-                state.loginstatus = true;
-                state.imgUrl = userinfo.imgUrl;
-                state.token = userinfo.token;
-                state.nickname = userinfo.nickName;
+        nologin: (state) => {
+            if (!state.loginstatus) {
+                state.userInform = '';
+                state.token = null;
+                state.imgUrl = '';
+                state.nickname = '';
+                state.logintime = '';
+                state.tel = '';
             }
-        },
-
-        outlogin: (state) => {
-            localStorage.removeItem('userinfo')
-            state.loginstatus = false;
-            state.imgUrl = '';
-            state.token = null;
-            state.nickname = '';
-        },
-
+        }
     },
     actions: {
         // 登录操作
@@ -40,15 +34,38 @@ export const userInfo = defineStore('userinfo', {
                     code
                 }
             }).then(res => {
-                console.log(res.data);
+                this.logintime = new Date();
+                console.log(this.logintime);
                 this.loginstatus = true;
-                this.userInform = res.data.data;
                 this.imgUrl = res.data.data.imgUrl;
                 this.nickname = res.data.data.nickName;
-                //本地存储
-                localStorage.setItem('userinfo', JSON.stringify(res.data.data,))
+                this.token = res.data.data.token;
+                this.sex = res.data.data.sex;
+                this.tel = res.data.data.tel;
+
             })
         },
-
+        refresh() {
+            console.log('已经操作');
+            http.post('api/refreshtoken').then(res => this.token = res.data.token)
+            this.logintime = new Date()
+        },
+        freshdata(data) {
+            http.post('api/freshdata', data).then(res => {
+                console.log(res);
+                this.imgUrl = res.data.data.imgUrl;
+                this.nickname = res.data.data.nickName;
+                this.sex = res.data.data.sex;
+                this.tel = res.data.data.tel;
+                this.token = res.data.data.token;
+            })
+        },
+        //退出登录
+        outlogin() {
+            this.loginstatus = false;
+            this.imgUrl = '';
+            this.token = null;
+            this.nickname = '';
+        },
     }
 }) 

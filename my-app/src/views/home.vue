@@ -1,7 +1,7 @@
 <template>
     <van-sticky>
         <Header></Header>
-        <Tabnav></Tabnav>
+      
     </van-sticky>
     <van-loading size="24px" vertical v-if="data.request_state = 0">加载中...</van-loading>
     <div class="contain" v-else>
@@ -9,16 +9,13 @@
             <swiper></swiper>
             <icons></icons>
             <smalltitle :smalltitle="'爆款推荐'">
-
             </smalltitle>
             <showitem></showitem>
             <smalltitle :smalltitle="'猜你喜欢'">
-
             </smalltitle>
             <likev></likev>
         </div>
     </div>
-    <div class="footer">这是home</div>
     <footer_v></footer_v>
 </template>
 <script setup>
@@ -33,17 +30,13 @@ import Tabnav from '../components/home/tabnav.vue';
 import { usedata } from '../pinia/data';
 import { onBeforeUnmount } from 'vue';
 import { onMounted, ref } from 'vue';
+import { onBeforeRouteLeave } from 'vue-router';
 const scrollTop = ref(0);
-
 // 在组件销毁前保存滚动位置
-onBeforeUnmount(() => {
-    scrollTop.value = window.pageYOffset || document.documentElement.scrollTop;
-});
-
-// 在组件初始化时将保存的滚动位置应用到页面
-onMounted(() => {
-    window.scrollTo(0, scrollTop.value);
-});
+onBeforeRouteLeave((to, from) => {
+    // 在离开路由前保存滚动位置到 session 或 local storage
+    sessionStorage.setItem('scrollhome', JSON.stringify(window.scrollY));
+})
 const data = usedata();
 data.getdata();
 </script>

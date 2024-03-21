@@ -8,7 +8,7 @@
     </div>
 
     <div v-else class="contains">
-        <div class="contain" v-for="(item, index) in usedata().search" :key="index">
+        <div class="contain" v-for="(item, index) in usedata().search" :key="index" @click="shop().getshopId(item.id)">
             <img :src=item.imgUrl alt="png">
             <div class="miaoshu">
                 <van-text-ellipsis :content=item.name />
@@ -19,6 +19,7 @@
 </template>
 <script setup>
 import { usedata } from '../../pinia/data';
+import { shop } from '../../pinia/shop';
 </script>
 <style lang="less" scoped>
 .contains {

@@ -1,57 +1,118 @@
 <template>
     <header-cart>
-        <span @click="">编辑</span>
+        <span @click="editor" class="allbutton">{{ value }}</span>
     </header-cart>
     <!-- 主体部分 -->
     <div class="cartbody">
+        <!-- 内容页 -->
+        <div v-if="typeof cart().data !== 'undefined' && cart().data.data.length > 0">
+            <van-checkbox v-model="cart().all" @click="checkbox">当前商品</van-checkbox>
+            <div v-for="item in cart().data.data" :key="item.id" style="display:flex;">
+                <van-checkbox :name="item.id" v-model="item.checked"
+                    @click="cart().checkeds(item.id, item.checked)"></van-checkbox>
+                <van-card :price="item.goods_price" desc="描述信息" :title="item.goods_name" :thumb="item.goods_imgUrl"
+                    style="flex:1">
+                    <template #num>
+                        <van-stepper v-model="item.goods_num" theme="round" button-size="22" disable-input
+                            @click="cart().updatanum(item.id, item.goods_num)" />
+                    </template>
+                    <template #tags>
+                        <van-tag plain type="primary">id</van-tag>
+                        <van-tag plain type="primary">{{ item.goods_id }}</van-tag>
+                    </template>
+                    <!-- <template #footer>
+                        <van-button size="mini">按钮</van-button>
+                        <van-button size="mini">按钮</van-button>
+                    </template> -->
+                </van-card>
+            </div>
+            <van-submit-bar v-if="!change" :price="cart().totalprice * 100 || 0" button-text="提交订单" @submit="onSubmit1">
+                <van-checkbox v-model="cart().all" @click="checkbox">全选</van-checkbox>
+                <!-- 当当前地址不适合时,提醒用户更改地址 -->
+                <!-- <template #tip>
+            你的收货地址不支持配送, <span @click="onClickLink">修改地址</span>
+        </template> -->
+            </van-submit-bar>
+            <van-submit-bar v-else button-text="删除" @submit="onSubmit2" class='del'>
+                <template #default>
+                    <van-checkbox v-model="cart().all" @click="checkbox">全选</van-checkbox>
+                </template>
+                <!-- 当当前地址不适合时,提醒用户更改地址 -->
+                <!-- <template #tip>
+                你的收货地址不支持配送, <span @click="onClickLink">修改地址</span>
+            </template> -->
+            </van-submit-bar>
+        </div>
         <!-- 空白页内容 -->
-        <div v-if="false">
+        <div v-else>
             <van-empty image="https://fastly.jsdelivr.net/npm/@vant/assets/custom-empty-image.png" image-size="80"
                 description="描述文字" />
         </div>
-        <!-- 内容页 -->
-        <div v-if="true">
-            <van-checkbox v-model="checked">复选框</van-checkbox>
-            <van-card num="2" price="2.00" desc="描述信息" title="商品标题"
-                thumb="https://fastly.jsdelivr.net/npm/@vant/assets/ipad.jpeg">
-                <template #num>
-                    <van-stepper v-model="value" theme="round" button-size="22" disable-input />
-                </template>
-                <template #tags>
-                    <van-tag plain type="primary">标签</van-tag>
-                    <van-tag plain type="primary">标签</van-tag>
-                </template>
-                <template #footer>
-                    <van-button size="mini">按钮</van-button>
-                    <van-button size="mini">按钮</van-button>
-                </template>
-            </van-card>
-
-        </div>
-
-
     </div>
-    <van-submit-bar :price="3050" button-text="提交订单" @submit="onSubmit">
-        <van-checkbox v-model="checked">全选</van-checkbox>
-        <template #tip>
-            你的收货地址不支持配送, <span @click="onClickLink">修改地址</span>
-        </template>
-    </van-submit-bar>
 </template>
 <script setup>
 import { showToast } from 'vant'
 import { provide, ref } from 'vue';
 import headerCart from '../components/header-bar/index.vue';
+import router from '../router';
+import { cart } from '../pinia/cartinfo'
 provide('righticon', true)
 provide('title', '购物车')
-const checked = ref(true)
-const onSubmit = () => {
-    showToast('点击按钮')
+const value = ref('编辑');
+const change = ref(false)
+const onSubmit1 = () => {
+    if (cart().selectdata.length > 0) {
+        router.push('/order')
+    }
+    else {
+        showToast('当前未选择商品')
+    }
 }
-    ;
+const onSubmit2 = () => {
+    // showToast('删除操作')
+    cart().delcart()
+}
+// 监听数据变化
+
+//编辑删除操作
+const editor = () => {
+    change.value = !change.value
+    change.value ? value.value = '完成' : value.value = '编辑'
+    cart().statuschange();
+}
 const onClickLink = () => showToast('修改地址');
+//监听步进值，及时修改后台商品数量值
+
+//全选操作
+const checkbox = () => {
+    if (cart().all == false) {
+        cart().data.data.forEach(element => {
+            element.checked = false
+        });
+    }
+    else {
+        cart().data.data.forEach(element => {
+            element.checked = true
+        });
+    }
+    cart().statuschange()
+}
 </script>
 <style scoped lang="less">
+.van-checkbox {
+    font-size: 15px;
+    font-family: Georgia, 'Times New Roman', Times, serif
+}
+
+.del :deep(.van-submit-bar__bar) {
+    justify-content: space-between;
+}
+
+.allbutton {
+    font-size: 15px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
 .cartbody {
     margin: 10px 10px;
 }

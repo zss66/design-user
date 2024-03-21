@@ -1,6 +1,6 @@
 <template>
     <header-bar>
-        <van-icon name="arrow-left" />
+        <van-icon name="arrow-left" @click="router.back" />
         <div>用户注册页</div>
         <van-icon name="wap-home" />
     </header-bar>
@@ -35,6 +35,7 @@
     </van-form>
 </template>
 <script setup>
+import router from '../../router';
 import http from '../../utils/request'
 import { ref } from 'vue';
 // import { closeToast, showLoadingToast } from 'vant';

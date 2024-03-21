@@ -11,7 +11,7 @@
     </router-view>
   </div>
 </template>
-<style  scoped>
+<style  scoped lang="less">
 #main {
   height: 100vh;
 }

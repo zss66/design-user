@@ -3,7 +3,8 @@
     <div class="container">
         <van-sticky class="left">
             <van-sidebar v-model="active">
-                <van-sidebar-item :title="item.name" v-for="item in items" :key="item.id" @click="scrollToTab(item.id)" />
+                <van-sidebar-item :title="item.name" v-for="item in items" :key="item.id"
+                    @click="scrollToTab(item.id)" />
             </van-sidebar>
         </van-sticky>
         <div style="padding-bottom: 50vh;" class="right">
@@ -25,7 +26,7 @@
         <Footer></Footer>
     </van-sticky>
 </template>
-<script setup >
+<script setup>
 import headervue from '../components/home/header.vue'
 import Footer from '../components/footer.vue';
 import { usedata } from '../pinia/data';
@@ -35,7 +36,7 @@ import http from '../utils/request';
 import { onUpdated, onBeforeUnmount } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
 const items = ref('')
-http.get('item').then(res => {
+http.get('api/item').then(res => {
     console.log(res.data.data[0].data[0].list);
     console.log(res.data.data);
     items.value = res.data.data;
@@ -54,7 +55,6 @@ const handlelisten = function () {
 }
 onBeforeRouteLeave((to, from, next) => {
     window.removeEventListener('scroll', handlelisten);
-
     next();
 })
 

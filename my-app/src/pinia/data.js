@@ -22,7 +22,6 @@ export const usedata = defineStore('data', {
     })
     ,
     getters: {
-
     }
     ,
     actions: {
@@ -35,7 +34,6 @@ export const usedata = defineStore('data', {
                 this.likes = res.data.data.like;
                 // this.like = res.data.data.like;
             })
-
         },
         //查询商品接口
         dbconnect(result) {

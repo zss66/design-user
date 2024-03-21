@@ -3,6 +3,12 @@ import home from '../views/home.vue'
 import searchListVue from '../components/others/searchList.vue'
 const router = createRouter({
     history: createWebHashHistory(),
+    scrollBehavior(to, from, savedPosition) {
+        if (to.name == 'home') {
+            const scrollhome = sessionStorage.getItem('scrollhome')
+            return { top: JSON.parse(scrollhome) }
+        }
+    },
     routes: [
         {
             name: 'home',
@@ -11,7 +17,8 @@ const router = createRouter({
             meta: {
                 title: '首页',
                 keepAlive: true,
-            }
+            },
+
         },
         {
             name: 'detail',
@@ -49,8 +56,7 @@ const router = createRouter({
         {
             name: 'login',
             path: '/login',
-            component: () => import('../components/login/index.vue'),
-
+            component: () => import('../components/login/index.vue')
         },
         {
             name: 'zhuce',
@@ -66,7 +72,40 @@ const router = createRouter({
                 path: 'newpsd',
                 component: () => import('../components/findpass/newpsd.vue'),
             }]
-        }
+        },
+        {
+            name: 'path',
+            path: '/path',
+            component: () => import('../components/path/show.vue'),
+            children: [
+                {
+                    name: 'newpath',
+                    path: 'newpath',
+                    component: () => import('../components/path/editor.vue'),
+                }
+            ]
+        },
+        {
+            name: 'order',
+            path: '/order',
+            component: () => import('../components/order/index.vue')
+        },
+        {
+            name: 'myorder',
+            path: '/myorder',
+            component: () => import('../components/myorder/index.vue')
+        },
+        {
+            name: 'myinfo',
+            path: '/myinfo',
+            component: () => import('../components/myinfo.vue')
+        },
+        {
+            name: 'sideswiper',
+            path: '/sideswiper',
+            component: () => import('../components/sideswiper/index.vue')
+        },
+
     ]
 })
 export default router

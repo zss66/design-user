@@ -1,10 +1,10 @@
 <template>
     <div class="contain">
         <img src="../../assets/images/logo.png" alt="logo">
-        <span>移动项目</span>
+        <span>食堂餐饮系统</span>
         <div style="display: flex; align-items: center; ">
             <van-button round type="success" @click="router.replace('/search')"> <van-icon name="search" /></van-button>
-            <van-icon name="chat-o" style="margin-left:15px ;" />
+            <van-icon name="chat-o" style="margin-left:15px ; font-size: 0.7rem;" />
         </div>
 
 

@@ -6,6 +6,13 @@ body {
     background-color: #f5f5f5;
 }
 
+:root:root {
+    .van-popup--center {
+        background-color: gray;
+    }
+}
+
+
 header-bar {
     box-sizing: border-box;
     width: 100vw;

@@ -1,5 +1,5 @@
 <template>
-    <div class="contain" v-for="(item, index) in usedata().showitem.data" :key="index">
+    <div class="contain" v-for="(item, index) in usedata().showitem.data" :key="index" @click="shop().getshopId(item.id)">
         <div class="title">畅销款</div>
         <img :src="item.imgUrl" alt="img">
         <div class="miaoshu">
@@ -11,7 +11,7 @@
 </template>
 <script setup>
 import { usedata } from '../../pinia/data';
-
+import { shop } from '../../pinia/shop';
 
 </script>
 <style lang="less" scoped>

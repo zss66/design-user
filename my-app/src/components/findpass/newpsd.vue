@@ -32,5 +32,6 @@ const failed = (err) => {
 
     console.log(err);
 }
+
 </script>
 <style lang="less" scoped></style>
