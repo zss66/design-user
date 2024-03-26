@@ -11,18 +11,17 @@
             <div class="blocks" v-for="item in items" :key="item.id" :id="item.id">
                 <smalltitle :smalltitle="item.name" class="title">
                 </smalltitle>
-                <div class="list" v-for="listitem in item.data[0].list">
+                <div class="list" v-for="listitem in item.data[0].list" :key="listitem.id">
                     <img :src="listitem.imgUrl" alt="图片">
                     <div class="list-dec">
                         <b>{{ listitem.name }}</b>
                         <p>增色添味，香气浓郁</p>
-
                         <div class="dec-footer">
                             <span>￥3.98</span>
 
-                            <van-stepper v-if="numvalue[index] > 0" v-model="numvalue[index]" theme="round" min="0"
+                            <van-stepper v-if="listitem.num > 0" @change="shopoffer(listitem)" v-model="listitem.num" theme="round" min="0"
                                 button-size="15" disable-input />
-                            <button v-else @click="numvalue[index] = 1" type="button"
+                            <button v-else @click="listitem.num = 1" type="button"
                                 style="width: 15px; height: 15px; text-align: center; padding: 0; line-height: 15px; color: #fff; background-color: #1989fa; border-radius: 50%; font-weight: 200;">+</button>
                         </div>
                     </div>
@@ -41,10 +40,7 @@ import http from '../../utils/request';
 import { onUpdated, onBeforeUnmount } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
 const items = ref('')
-const numvalue = ref([0])
 http.get('api/item').then(res => {
-    console.log(res.data.data[0].data[0].list);
-    console.log(res.data.data);
     items.value = res.data.data;
 })
 const sideactive = ref(0);
@@ -53,8 +49,8 @@ const handlelisten = function () {
     const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
     high.forEach((item, index) => {
         if (currentScrollTop >= item && currentScrollTop < high[index + 1]) {
-            active.value = index
-            console.log(active.value);
+            sideactive.value = index
+           
         }
     })
 }
@@ -73,8 +69,6 @@ onUpdated(() => {
             height = height + item.clientHeight
             high.push(height)
         })
-        console.log([...elements]);
-        console.log(high);
     }
 });
 
