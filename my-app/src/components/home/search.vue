@@ -21,14 +21,17 @@
                 <h5 @click="removelist">清空记录</h5>
             </div>
             <div v-if="sealist">
-                <div class="item" v-for="key in Object.keys(sealist) " :key="key">
-                    {{ key }}
+                <div style="display: flex; flex-wrap: wrap; font-size: 15px; margin-left: 20px;">
+                       
+                    <div class="item" v-for="key in Object.keys(sealist) " :key="key" style="margin: 10px; padding:  5px 10px; background-color: #fff; max-width: fit-content; border-radius: 5px;">
+                        {{ key }}
+                    </div>
                 </div>
             </div>
 
         </div>
         <div v-else>
-            <p>暂无搜索记录</p>
+            <p style="font-size: 15px;color: #999;margin-left: 20px;">暂无搜索记录</p>
         </div>
     </div>
     <footer_v></footer_v>

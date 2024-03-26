@@ -1,5 +1,6 @@
 <template>
-    <header-item></header-item>
+    <div>
+        <header-item></header-item>
     <van-form @submit="onSubmit">
         <van-field v-model="userInfo().nickname" name="昵称" label="昵称" placeholder="昵称"
             :rules="[{ required: true, message: '请填写新的昵称' }]" />
@@ -23,6 +24,8 @@
             </van-button>
         </div>
     </van-form>
+    </div>
+    
 </template>
 <script setup>
 import { showToast } from 'vant';
