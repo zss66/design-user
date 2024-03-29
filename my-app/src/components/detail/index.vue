@@ -44,30 +44,29 @@
                 </van-swipe-item>
             </van-swipe> -->
                 <!-- <img :src="shopinfo.data.data[0].imgUrl" style="width: 95vw;margin: 0 auto;" /> -->
-                <img src="../../assets/images/yuna.jpg" style="width: 100vw;margin: 0 auto;" />
+                <img :src="usedata().shopselect.swiperurl" style="width: 100vw; height: 200px; margin: 0 auto;" />
 
             </div>
+
             <div
                 style="margin-top: -50px;position: relative;  background: #fff;z-index: 1;padding-top: 20px;border-radius: 20px;">
-                <div class="containlike" >
-            <img src="../../assets/images/like.jpeg" alt="png">
-            <div class="miaoshu">
-                <van-text-ellipsis content='食堂点餐页面' style="font-weight:bolder;margin-bottom: 5px;" />
-                <div class="shopdata">
-                     <div class="sore"><span>4.9</span>分</div>
-                     <div class="buynum">月售2000</div>
+                <div class="containlike">
+                    <img :src="usedata().shopselect.showurl" alt="png">
+                    <div class="miaoshu">
+                        <van-text-ellipsis content='食堂点餐页面' style="font-weight:bolder;margin-bottom: 5px;" />
+                        <div class="shopdata">
+                            <div class="sore"><span>{{ usedata().shopselect.goal }}</span>分</div>
+                            <div class="buynum">月售{{ usedata().shopselect.num }}</div>
+                        </div>
+                        <div class="eatstyle">
+                            <span v-for="i in usedata().shopselect.offer.split(',')">{{ i }}</span>
+
+                        </div>
+                        <div class="shopact">
+                            <span>{{ usedata().shopselect.shopdec }}</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="eatstyle">
-                    <span>可堂食</span>
-                    <span>可打包</span>
-                    <span>支持预定</span>
-                    <span>限时开单</span>
-                </div>
-                <div class="shopact">
-                    <span>到店送饮料</span>
-                </div>
-            </div>
-        </div>
                 <van-sticky offset-top="49px">
                     <van-tabs v-model:active="swiactive">
                         <van-tab title="点餐">
@@ -77,7 +76,7 @@
                     </van-tabs>
                 </van-sticky>
                 <sideswiper v-show="swiactive == 0"></sideswiper>
-                <div class="score" v-show="swiactive==1">
+                <div class="score" v-show="swiactive == 1">
                     <div>
                         <div class="scorenum">
                             <div>
@@ -95,13 +94,14 @@
                                             <span style="font-size: 15px;font-weight: 700;">微信用户 </span>
                                             <van-rate v-model="rate" :size="12" color="#ffd21e" void-icon="star"
                                                 void-color="#eee" />
-                                                <div style="font-size: 12px; color: #999;">1件商品</div>
+                                            <div style="font-size: 12px; color: #999;">1件商品</div>
                                         </div>
                                         <span style="font-size: 12px; color: #999;margin-top: 10px;">
                                             2024-03-16 21:13:06
                                         </span>
                                     </div>
-                                    <div style="font-size: 12px; padding: 5px;background-color: #eee;border-radius: 5px;">
+                                    <div
+                                        style="font-size: 12px; padding: 5px;background-color: #eee;border-radius: 5px;">
                                         <span style="color: orangered;">商家回复：</span>
                                         <span style="color: #999;">感谢支持。</span>
                                     </div>
@@ -119,10 +119,11 @@
                     </div>
                     <div class="bossdetail">
                         <div class="bosstime">
-                            营业时间： 6:00-12:00
+                            营业时间： {{ usedata().shopselect.opentime }}
                         </div>
-                        <div class="bossadress"> 地址: 第八学生食堂</div>
-                        <div class="bossphone">联系电话： 0000000</div>
+                        <div class="bossadress"> 地址: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ usedata().shopselect.address }}
+                        </div>
+                        <div class="bossphone">联系电话： {{ usedata().shopselect.phone }}</div>
                     </div>
                 </div>
 
@@ -183,13 +184,14 @@ import { ref } from 'vue';
 import http from '../../utils/request';
 import { shop } from '../../pinia/shop';
 import { userInfo } from '../../pinia/userinfo';
+import { usedata } from '../../pinia/data';
 import { onMounted } from 'vue';
 import Swal from 'sweetalert2'
 Swal.fire({
-  title: 'Error!',
-  text: 'Do you want to continue',
-  icon: 'error',
-  confirmButtonText: 'Cool'
+    title: 'Error!',
+    text: 'Do you want to continue',
+    icon: 'error',
+    confirmButtonText: 'Cool'
 })
 const show = ref(false);
 const rate = 5
@@ -243,53 +245,63 @@ const buynow = () => {
     padding: 0;
     margin: 0;
 }
+
 .containlike {
     background-color: #fff;
     display: flex;
-    margin: 5px ;
+    margin: 5px;
     padding: 5px 10px;
     font-size: 15px;
     border-radius: 5px;
-    .miaoshu{
+
+    .miaoshu {
         width: 100%;
-        .shopdata{
+
+        .shopdata {
             color: #666;
             display: flex;
             font-size: 12px;
-            .sore{               
+
+            .sore {
                 line-height: 15px;
-                 margin-right: 10px;
+                margin-right: 10px;
                 color: rgb(239, 86, 10);
-                  span{    
-                font-weight: 700;
-                font-size: 15px;    
+
+                span {
+                    font-weight: 700;
+                    font-size: 15px;
+                }
             }
-            }
-            
+
         }
-        .eatstyle{
+
+        .eatstyle {
             color: #1f1f1f;
             margin: 5px 0;
             font-size: 12px;
-            span{
+
+            span {
                 background-color: #97d4bf;
                 padding: 2px;
                 border-radius: 2px;
                 margin-right: 3px;
             }
         }
-        .shopact{
+
+        .shopact {
             font-size: 12px;
-             margin-top: 10px;
-            span{
+            margin-top: 10px;
+
+            span {
                 padding: 2px;
                 border-radius: 2px;
                 background-color: #e8c9af;
                 margin-right: 3px;
-               
+
             }
         }
     }
+
     img {
         padding: 0 10px;
         width: 100px;

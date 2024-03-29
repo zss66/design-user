@@ -12,6 +12,7 @@ import 'amfe-flexible';
 import '../src/assets/base.css'
 import 'vant/lib/index.css';
 import { order } from './pinia/order'
+
 createApp(App)
     .use(createPinia().use(persistedState))
     .use(router)

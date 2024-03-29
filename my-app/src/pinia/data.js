@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import http from '../utils/request'
 export const usedata = defineStore('data', {
+    persist: true,
     state: () => ({
         searchlist: {},
         renew: true,
@@ -15,6 +16,7 @@ export const usedata = defineStore('data', {
         likes: '',
         showitem: '',
         search: [],
+        shopselect: '',
         //创建list-tab的active
         list_act: 0,
         //响应状态---用于过渡动画

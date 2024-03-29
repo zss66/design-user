@@ -63,7 +63,23 @@ export default defineConfig({
   }), Components({
     resolvers: [VantResolver()],
   }),
-  // VueDevTools(),
+  VueDevTools({
+    host: 'localhost', // 指定要打开的主机
+    port: 8098, // 指定要打开的端口
+    // appendTo: '#app', // 将 Vue Devtools 插件挂载到 id 为 `app` 的 DOM 元素上
+
+    // features: {
+    //   timeline: true, // 启用时间旅行功能
+    //   performance: true // 启用性能监控功能
+    // },
+    // depth: 10, // 响应式数据的深度限制为 10 层
+    // filters: {
+    //   foo: true, // 显示名为 `foo` 的事件过滤器
+    //   bar: false // 不显示名为 `bar` 的事件过滤器
+    // },
+    // timelineLimit: 100, // 时间旅行记录的限制为 100 条
+    // openInEditorHost: 'myeditor://' // 指定打开编辑器的主机地址
+  }),
   ],
 
   css: {

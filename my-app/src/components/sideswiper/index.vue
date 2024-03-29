@@ -2,27 +2,27 @@
     <div class="container">
         <van-sticky offset-top="99px" class="left">
             <van-sidebar v-model="sideactive">
-                <van-sidebar-item :title="item.name" v-for="item in items" :key="item.id"
-                    @click="scrollToTab(item.id)" />
+                <van-sidebar-item :title="item" v-for="(item, index) in items.map(item => Object.keys(item)[0])  "
+                    :key="item" @click="scrollToTab(index)" />
             </van-sidebar>
         </van-sticky>
+
         <div style="padding-bottom: 50vh;" class="right">
 
-            <div class="blocks" v-for="item in items" :key="item.id" :id="item.id">
-                <smalltitle :smalltitle="item.name" class="title">
+            <div class="blocks" v-for="(item, index) in items" :key="index" :id="index">
+                <smalltitle :smalltitle="Object.keys(item)[0]" class="title">
                 </smalltitle>
-                <div class="list" v-for="listitem in item.data[0].list" :key="listitem.id">
-                    <img :src="listitem.imgUrl" alt="图片">
+                <div class="list" v-for="listitem in item[Object.keys(item)[0]]" :key="listitem.id">
+                    <img :src="listitem.img" alt="图片">
                     <div class="list-dec">
                         <b>{{ listitem.name }}</b>
-                        <p>增色添味，香气浓郁</p>
+                        <p>{{ listitem.dec }}</p>
                         <div class="dec-footer">
-                            <span>￥3.98</span>
-
-                            <van-stepper v-if="listitem.num > 0" @change="shopoffer(listitem)" v-model="listitem.num" theme="round" min="0"
+                            <span>{{ listitem.price }}</span>
+                            <van-stepper @change='yanzhen(listitem)' :show-minus="listitem.num != 0"
+                                :show-input="listitem.num != 0" v-model="listitem.num" theme="round" min="0"
                                 button-size="15" disable-input />
-                            <button v-else @click="listitem.num = 1" type="button"
-                                style="width: 15px; height: 15px; text-align: center; padding: 0; line-height: 15px; color: #fff; background-color: #1989fa; border-radius: 50%; font-weight: 200;">+</button>
+
                         </div>
                     </div>
                 </div>
@@ -39,8 +39,12 @@ import { ref } from 'vue';
 import http from '../../utils/request';
 import { onUpdated, onBeforeUnmount } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
-const items = ref('')
-http.get('api/item').then(res => {
+const items = ref([])
+http.get('api/getclass', {
+    params: {
+        shopid: 1
+    }
+}).then(res => {
     items.value = res.data.data;
 })
 const sideactive = ref(0);
@@ -50,19 +54,33 @@ const handlelisten = function () {
     high.forEach((item, index) => {
         if (currentScrollTop >= item && currentScrollTop < high[index + 1]) {
             sideactive.value = index
-           
+
         }
     })
 }
+let remind = true
+const yanzhen = (i) => {
+    //业务提醒，询问顾客是否要选择套餐，如果选择的话，开启限制，如果不选择，不处理，按单价购买
+    if ((i.type == 1 || i.type == 2) && remind) {
+        console.log(i);
+        remind = false
+    }
+    //     if (type === 'a' && productId === 1) {
+    //     logCombination('a=1, b=1');
+    //   } else if (type === 'a' && productId === 2) {
+    //     logCombination('a=1, b=2');
+    //   } else if (type === 'b' && productId === 1) {
+    //     logCombination('a=2, b=1');
+    //   }
+}
 onBeforeRouteLeave((to, from, next) => {
     window.removeEventListener('scroll', handlelisten);
-
     next();
 })
 
 onUpdated(() => {
     window.addEventListener('scroll', handlelisten);
-    let height = 0
+    let height = 99
     var elements = document.getElementsByClassName("blocks");
     if (high.length == 1) {
         [...elements].forEach((item) => {
@@ -75,7 +93,7 @@ onUpdated(() => {
 //点击tab标签，滑动到对应位置
 const scrollToTab = (id) => {
     const item = document.getElementById(id);
-    console.log(id);
+
     // observer.observe(item)
 
     if (item) {
