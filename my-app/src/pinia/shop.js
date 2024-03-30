@@ -13,7 +13,7 @@ export const shop = defineStore('shop', {
     actions: {
         getshopId(id) {
             if (id) {
-                http.get('api/shopdetail', {
+                http.get('api/shoper/info', {
                     params: {
                         id
                     }
