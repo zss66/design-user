@@ -44,26 +44,26 @@
                 </van-swipe-item>
             </van-swipe> -->
                 <!-- <img :src="shopinfo.data.data[0].imgUrl" style="width: 95vw;margin: 0 auto;" /> -->
-                <img :src="usedata().shopselect.swiperurl" style="width: 100vw; height: 200px; margin: 0 auto;" />
+                <img :src="shop().shopselect.swiperurl" style="width: 100vw; height: 200px; margin: 0 auto;" />
 
             </div>
 
             <div
                 style="margin-top: -50px;position: relative;  background: #fff;z-index: 1;padding-top: 20px;border-radius: 20px;">
                 <div class="containlike">
-                    <img :src="usedata().shopselect.showurl" alt="png">
+                    <img :src="shop().shopselect.showurl" alt="png">
                     <div class="miaoshu">
                         <van-text-ellipsis content='食堂点餐页面' style="font-weight:bolder;margin-bottom: 5px;" />
                         <div class="shopdata">
-                            <div class="sore"><span>{{ usedata().shopselect.goal }}</span>分</div>
-                            <div class="buynum">月售{{ usedata().shopselect.num }}</div>
+                            <div class="sore"><span>{{ shop().shopselect.goal }}</span>分</div>
+                            <div class="buynum">月售{{ shop().shopselect.num }}</div>
                         </div>
                         <div class="eatstyle">
-                            <span v-for="i in usedata().shopselect.offer.split(',')">{{ i }}</span>
+                            <span v-for="i in shop().shopselect.offer.split(',')">{{ i }}</span>
 
                         </div>
                         <div class="shopact">
-                            <span>{{ usedata().shopselect.shopdec }}</span>
+                            <span>{{ shop().shopselect.shopdec }}</span>
                         </div>
                     </div>
                 </div>
@@ -119,11 +119,11 @@
                     </div>
                     <div class="bossdetail">
                         <div class="bosstime">
-                            营业时间： {{ usedata().shopselect.opentime }}
+                            营业时间： {{ shop().shopselect.opentime }}
                         </div>
-                        <div class="bossadress"> 地址: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ usedata().shopselect.address }}
+                        <div class="bossadress"> 地址: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ shop().shopselect.address }}
                         </div>
-                        <div class="bossphone">联系电话： {{ usedata().shopselect.phone }}</div>
+                        <div class="bossphone">联系电话： {{ shop().shopselect.phone }}</div>
                     </div>
                 </div>
 
@@ -131,22 +131,6 @@
 
 
         </div>
-
-        <!-- 购买消息确认框 -->
-        <van-action-sheet v-model:show="show" :title="shopinfo.data.data[0].name">
-            <div style="display: flex;padding: 0 20px">
-                <img :src="shopinfo.data.data[0].imgUrl" alt="商品图片" style="width: 78px;height: 78px;">
-                <div style="font-size: 20px;padding-left: 15px;">
-                    <p style="margin-bottom: 10px;">{{ shopinfo.data.data[0].price }}￥</p>
-                    <p>库存 100件</p>
-
-                </div>
-            </div>
-            <van-stepper v-model="value" theme="round" button-size="22" disable-input
-                style="position: fixed;right: 20px;" />
-            <div class="content"></div>
-            <van-button type="danger" style="position: sticky;width: 100%;" @click="console.log(value)">确认</van-button>
-        </van-action-sheet>
         <!-- 底部信息 -->
         <van-sticky position="bottom"
             style="position: fixed;bottom: 0;width: 100vw; z-index: 2; background-color: #fff;">
@@ -164,10 +148,10 @@
                     <span>收藏</span>
                 </div>
                 <div>
-                    <van-button type="warning" @click="addcart"
+                    <van-button type="warning" style="padding: 0 15px;border-radius: 0;">套餐{{ shop().taocanprice }}+单品{{
+                shop().choicePrice }}</van-button>
+                    <van-button type="danger" @click="addcart"
                         style="padding: 0 15px;border-radius: 0;">加入购物车</van-button>
-                    <van-button type="danger" @click="buynow"
-                        style="padding: 0 15px;border-radius: 0;">立即购买</van-button>
                 </div>
 
             </div>
@@ -183,21 +167,11 @@ import router from '../../router';
 import { ref } from 'vue';
 import http from '../../utils/request';
 import { shop } from '../../pinia/shop';
-import { userInfo } from '../../pinia/userinfo';
-import { usedata } from '../../pinia/data';
+import { userInfo } from '../../pinia/userinfo'
 import { onMounted } from 'vue';
-import Swal from 'sweetalert2'
-Swal.fire({
-    title: 'Error!',
-    text: 'Do you want to continue',
-    icon: 'error',
-    confirmButtonText: 'Cool'
-})
 const show = ref(false);
 const rate = 5
-const tabactive = ref(0)
 const swiactive = ref(0)
-let shopinfo = shop()
 // 此数据为
 const active = ref(0)
 //设置头部文件根据商品信息的高度而透明度渐变过程
@@ -212,7 +186,18 @@ onMounted(() => {
     })
 })
 //监听
+window.addEventListener('beforeunload', function (event) {
+    // 在这里调用你的方法
+    shop().data.forEach(i => {
+        Object.values(i)[0].forEach(v => {
+            v.num = 0
+        })
+    })
 
+    // 为了确保浏览器显示默认的提示消息，你可以返回一个字符串
+    // 这个字符串将被浏览器用于显示给用户的提示信息
+    event.returnValue = 'Are you sure you want to leave?';
+});
 //加入购物车操作
 const addcart = () => {
     if (userInfo().loginstatus) {
@@ -221,7 +206,7 @@ const addcart = () => {
         console.log("已经完成加入操作");
         http.post('api/addcart', {
             data: {
-                id: shopinfo.data.data[0].id,
+                taocan: shop().taocan.map(item),
             }
         },).then(res => console.log(res.data.data.msg))
     }
@@ -235,9 +220,7 @@ const addcart = () => {
     }
 }
 //立即购买操作
-const buynow = () => {
-    show.value = true
-}
+
 </script>
 <style lang="less" scoped>
 * {

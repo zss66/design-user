@@ -2,14 +2,14 @@
     <div class="container">
         <van-sticky offset-top="99px" class="left">
             <van-sidebar v-model="sideactive">
-                <van-sidebar-item :title="item" v-for="(item, index) in items.map(item => Object.keys(item)[0])  "
+                <van-sidebar-item :title="item" v-for="(item, index) in shop().data.map(item => Object.keys(item)[0])  "
                     :key="item" @click="scrollToTab(index)" />
             </van-sidebar>
         </van-sticky>
 
         <div style="padding-bottom: 50vh;" class="right">
 
-            <div class="blocks" v-for="(item, index) in items" :key="index" :id="index">
+            <div class="blocks" v-for="(item, index) in shop().data" :key="index" :id="index">
                 <smalltitle :smalltitle="Object.keys(item)[0]" class="title">
                 </smalltitle>
                 <div class="list" v-for="listitem in item[Object.keys(item)[0]]" :key="listitem.id">
@@ -18,7 +18,11 @@
                         <b>{{ listitem.name }}</b>
                         <p>{{ listitem.dec }}</p>
                         <div class="dec-footer">
-                            <span>{{ listitem.price }}</span>
+                            <div>
+                                <b>{{ listitem.newprice }}</b>
+                                <span>¥{{ listitem.price }}</span>
+                            </div>
+
                             <van-stepper @change='yanzhen(listitem)' :show-minus="listitem.num != 0"
                                 :show-input="listitem.num != 0" v-model="listitem.num" theme="round" min="0"
                                 button-size="15" disable-input />
@@ -33,20 +37,14 @@
     </div>
 </template>
 <script setup>
-import { usedata } from '../../pinia/data';
+import { shop } from '../../pinia/shop';
 import smalltitle from '../../components/home/smalltitle.vue';
 import { ref } from 'vue';
 import http from '../../utils/request';
 import { onUpdated, onBeforeUnmount } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
-const items = ref([])
-http.get('api/getclass', {
-    params: {
-        shopid: 1
-    }
-}).then(res => {
-    items.value = res.data.data;
-})
+import swal from 'sweetalert';
+import { watchEffect } from 'vue';
 const sideactive = ref(0);
 const high = [99];
 const handlelisten = function () {
@@ -58,20 +56,89 @@ const handlelisten = function () {
         }
     })
 }
-let remind = true
-const yanzhen = (i) => {
-    //业务提醒，询问顾客是否要选择套餐，如果选择的话，开启限制，如果不选择，不处理，按单价购买
-    if ((i.type == 1 || i.type == 2) && remind) {
-        console.log(i);
-        remind = false
+function compareAndUpdateArray(arr, obj) {
+    let isin = false
+    // 遍历数组
+    for (let i = 0; i < arr.length; i++) {
+        // 如果数组中存在与对象相同的 id
+        if (arr[i].id == obj.id) {
+            isin = true
+            arr[i].num = obj.num
+            if (arr[i].num <= 0) {
+                arr.splice(i, 1);
+            }
+            return;
+        }
     }
-    //     if (type === 'a' && productId === 1) {
-    //     logCombination('a=1, b=1');
-    //   } else if (type === 'a' && productId === 2) {
-    //     logCombination('a=1, b=2');
-    //   } else if (type === 'b' && productId === 1) {
-    //     logCombination('a=2, b=1');
-    //   }
+    if (!isin) {
+        arr.push(obj)
+    }
+    // 如果数组中不存在与对象相同的 id，则将对象添加到数组中
+
+}
+function sumNumsInArray(arr) {
+    let sum = 0;
+    // 遍历数组
+    for (let i = 0; i < arr.length; i++) {
+        // 累加每个对象的 num 值
+        sum += arr[i].num;
+    }
+    return sum;
+}
+function sumNumsByType(arr, type) {
+    let sum = 0;
+    // 遍历数组
+    for (let i = 0; i < arr.length; i++) {
+        // 如果找到匹配的类型，则累加其 num 值
+        if (arr[i].type === type) {
+            sum += arr[i].num;
+        }
+    }
+    return sum;
+}
+
+
+
+const yanzhen = (is) => {
+    let i = { ...is }
+    //业务提醒，询问顾客是否要选择套餐，如果选择的话，开启限制，如果不选择，不处理，按单价购买
+    if ((i.type == 1 || i.type == 2)) {
+        compareAndUpdateArray(shop().taocan, i)
+        if (sumNumsByType(shop().taocan, 1) + sumNumsByType(shop().taocan, 2) < 2) {
+            swal({
+                title: "套餐菜品提示",
+                text: "套餐内餐品不能只购买一份，超出套餐范围按原价收取",
+                icon: "info",
+            });
+
+        }
+        else if (sumNumsByType(shop().taocan, 1) + sumNumsByType(shop().taocan, 2) > 3) {
+            swal({
+                title: "超出套餐数量",
+                text: "超出套餐数量后，再次添加只能按照原价购买！",
+                icon: "info",
+            });
+            compareAndUpdateArray(shop().choice, i)
+
+        }
+        if (sumNumsByType(shop().taocan, 1) == 1 && sumNumsByType(shop().taocan, 2) == 1) {
+
+            console.log('当前为一荤一素套餐，选择的餐品为', shop().taocan);
+            shop().taocanprice = 7;
+        }
+        else if (sumNumsByType(shop().taocan, 1) == 2 && sumNumsByType(shop().taocan, 2) == 1) {
+            console.log('当前为一荤两素套餐，选择的餐品为', shop().taocan);
+            shop().taocanprice = 8;
+
+        }
+        else if (sumNumsByType(shop().taocan, 1) == 1 && sumNumsByType(shop().taocan, 2) == 2) {
+            shop().taocanprice = 9;
+            console.log('当前为两荤一素套餐，选择的餐品为', shop().taocan);
+        }
+    }
+    else {
+        compareAndUpdateArray(shop().choice, i)
+    }
 }
 onBeforeRouteLeave((to, from, next) => {
     window.removeEventListener('scroll', handlelisten);
@@ -107,6 +174,15 @@ const scrollToTab = (id) => {
 };
 </script>
 <style lang="less" scoped>
+@media (max-width: 600px) {
+    .mobile-layout-container {
+        width: 90%;
+        max-width: 90%;
+        padding: 10px;
+        font-size: 0.5rem;
+    }
+}
+
 .container {
     display: flex;
 
@@ -161,8 +237,15 @@ const scrollToTab = (id) => {
                     font-size: 13px;
                     margin-bottom: 5px;
 
+                    b {
+                        font-size: 17px;
+                        margin-right: 5px;
+                        color: #de6119;
+                    }
+
                     span {
-                        color: #de5718;
+                        color: #999;
+                        text-decoration: line-through;
                     }
                 }
 
