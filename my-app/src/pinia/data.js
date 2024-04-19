@@ -1,9 +1,12 @@
 import { defineStore } from 'pinia'
+import router from '../router'
 import http from '../utils/request'
 export const usedata = defineStore('data', {
     persist: true,
     state: () => ({
         searchlist: {},
+        //shoper data
+        data:[],
         renew: true,
         bol: false,
         active_footer: 0,
@@ -16,7 +19,7 @@ export const usedata = defineStore('data', {
         likes: '',
         showitem: '',
         search: [],
-        shopselect: '',
+        shopselect: [],
         //创建list-tab的active
         list_act: 0,
         //响应状态---用于过渡动画
@@ -36,6 +39,21 @@ export const usedata = defineStore('data', {
                 this.likes = res.data.data.like;
                 // this.like = res.data.data.like;
             })
+        },
+        getshopId(item) {
+            if (item) {
+                this.shopselect = item
+                
+                http.get('api/getclass', {
+                    params: {
+                        shopid: item.id
+                    }
+                }).then(res => {
+                    this.data = res.data.data.sort((a, b) => {
+                        return parseInt(a.classid) -  parseInt(b.classid)})
+                    router.push('/detail')
+                })
+            }
         },
         //查询商品接口
         dbconnect(result) {

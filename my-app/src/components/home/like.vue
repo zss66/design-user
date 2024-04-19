@@ -9,7 +9,7 @@
 
     <div v-else class="contains">
         <div class="containlike" v-for="(item, index) in usedata().likes.data" :key="index"
-            @click=" shop().getshopId(item)">
+            @click=" usedata().getshopId(item)">
             <img :src=item.showurl alt="png">
             <div class="miaoshu">
                 <van-text-ellipsis :content=item.title style="font-weight:bolder;margin-bottom: 5px;" />
@@ -29,7 +29,6 @@
 </template>
 <script setup>
 import { usedata } from '../../pinia/data';
-import { shop } from '../../pinia/shop';
 import router from '../../router';
 </script>
 <style lang="less" scoped>

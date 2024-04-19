@@ -1,4 +1,5 @@
 <template>
+   <div>
     <header-cart>
         <span @click="editor" class="allbutton">{{ value }}</span>
     </header-cart>
@@ -10,7 +11,7 @@
             <div v-for="item in cart().data.data" :key="item.id" style="display:flex;">
                 <van-checkbox :name="item.id" v-model="item.checked"
                     @click="cart().checkeds(item.id, item.checked)"></van-checkbox>
-                <van-card :price="item.goods_price" desc="描述信息" :title="item.goods_name" :thumb="item.goods_imgUrl"
+                <van-card :price="item.goods_price" :desc="item.goodsdec" :title="item.goods_name" :thumb="item.goods_imgUrl"
                     style="flex:1">
                     <template #num>
                         <van-stepper v-model="item.goods_num" theme="round" button-size="22" disable-input
@@ -49,6 +50,7 @@
                 description="描述文字" />
         </div>
     </div>
+   </div>
 </template>
 <script setup>
 import { showToast } from 'vant'

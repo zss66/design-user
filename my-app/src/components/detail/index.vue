@@ -40,30 +40,30 @@
             <div class="photo">
                 <!-- 预留swipe板块 -->
                 <!-- <van-swipe :autoplay="3000" lazy-render>
-                <van-swipe-item v-for="image in shop().data[0].imgUrl" :key="image" style="margin-top: 50px;">
+                <van-swipe-item v-for="image in usedata().data[0].imgUrl" :key="image" style="margin-top: 50px;">
                 </van-swipe-item>
             </van-swipe> -->
                 <!-- <img :src="shopinfo.data.data[0].imgUrl" style="width: 95vw;margin: 0 auto;" /> -->
-                <img :src="shop().shopselect.swiperurl" style="width: 100vw; height: 200px; margin: 0 auto;" />
+                <img :src="usedata().shopselect.swiperurl" style="width: 100vw; height: 200px; margin: 0 auto;" />
 
             </div>
 
             <div
                 style="margin-top: -50px;position: relative;  background: #fff;z-index: 1;padding-top: 20px;border-radius: 20px;">
                 <div class="containlike">
-                    <img :src="shop().shopselect.showurl" alt="png">
+                    <img :src="usedata().shopselect.showurl" alt="png">
                     <div class="miaoshu">
                         <van-text-ellipsis content='食堂点餐页面' style="font-weight:bolder;margin-bottom: 5px;" />
                         <div class="shopdata">
-                            <div class="sore"><span>{{ shop().shopselect.goal }}</span>分</div>
-                            <div class="buynum">月售{{ shop().shopselect.num }}</div>
+                            <div class="sore"><span>{{ usedata().shopselect.goal }}</span>分</div>
+                            <div class="buynum">月售{{ usedata().shopselect.num }}</div>
                         </div>
                         <div class="eatstyle">
-                            <span v-for="i in shop().shopselect.offer.split(',')">{{ i }}</span>
+                            <span v-for="i in usedata().shopselect.offer.split(',')">{{ i }}</span>
 
                         </div>
                         <div class="shopact">
-                            <span>{{ shop().shopselect.shopdec }}</span>
+                            <span>{{ usedata().shopselect.shopdec }}</span>
                         </div>
                     </div>
                 </div>
@@ -119,11 +119,11 @@
                     </div>
                     <div class="bossdetail">
                         <div class="bosstime">
-                            营业时间： {{ shop().shopselect.opentime }}
+                            营业时间： {{ usedata().shopselect.opentime }}
                         </div>
-                        <div class="bossadress"> 地址: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ shop().shopselect.address }}
+                        <div class="bossadress"> 地址: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ usedata().shopselect.address }}
                         </div>
-                        <div class="bossphone">联系电话： {{ shop().shopselect.phone }}</div>
+                        <div class="bossphone">联系电话： {{ usedata().shopselect.phone }}</div>
                     </div>
                 </div>
 
@@ -166,9 +166,11 @@ import { showToast } from 'vant';
 import router from '../../router';
 import { ref } from 'vue';
 import http from '../../utils/request';
+import { usedata } from '../../pinia/data';
 import { shop } from '../../pinia/shop';
 import { userInfo } from '../../pinia/userinfo'
 import { onMounted } from 'vue';
+import swal from 'sweetalert';
 const show = ref(false);
 const rate = 5
 const swiactive = ref(0)
@@ -188,7 +190,7 @@ onMounted(() => {
 //监听
 window.addEventListener('beforeunload', function (event) {
     // 在这里调用你的方法
-    shop().data.forEach(i => {
+    usedata().data.forEach(i => {
         Object.values(i)[0].forEach(v => {
             v.num = 0
         })
@@ -196,19 +198,74 @@ window.addEventListener('beforeunload', function (event) {
 
     // 为了确保浏览器显示默认的提示消息，你可以返回一个字符串
     // 这个字符串将被浏览器用于显示给用户的提示信息
-    event.returnValue = 'Are you sure you want to leave?';
+
 });
+function sumNumsByType(arr, type) {
+    let sum = 0;
+    // 遍历数组
+    for (let i = 0; i < arr.length; i++) {
+        // 如果找到匹配的类型，则累加其 num 值
+        if (arr[i].type === type) {
+            sum += arr[i].num;
+        }
+    }
+    return sum;
+}
 //加入购物车操作
 const addcart = () => {
     if (userInfo().loginstatus) {
         // http.get()
-        showToast('加入购物车成功！')
-        console.log("已经完成加入操作");
+        showToast('已经点击了');
+        if (shop().taocan.length != 0 && shop().taocanprice == 0) {
+            swal({
+                title: "套餐提示",
+                text: "当前未形成套餐价格，请确认",
+                icon: "info",
+                buttons: {
+                    cancel: "取消",
+                    catch: {
+                        text: "直接购买",
+                        value: "catch",
+                    },
+                    defeat: {
+                        text:"继续添加",
+                        value:"defeat"
+                    },
+                },
+            }).then((value) => {
+                switch (value) {
+                    case "defeat":
+                        break;
+                    case "catch":
+                        shop().taocan.forEach(ele=>{
+                            shop().choice.push(ele)
+                        })
+                        shop().taocan=[]
+                        console.log(shop().choice);
+                        swal("提示", "当前为非套餐模式", "success");
+                        shop().getcart()
+         showToast('加入购物车成功！')
+         console.log("已经完成加入操作");
         http.post('api/addcart', {
-            data: {
-                taocan: shop().taocan.map(item),
-            }
-        },).then(res => console.log(res.data.data.msg))
+           data:shop().cart,
+           shopid:usedata().shopselect.id
+        },).then(res => console.log(res.data.msg))
+                        break;
+                    default:
+                        swal("当前未选择，无法进行下一步");
+                }
+            });;
+        }
+        else{
+            shop().getcart()
+         showToast('加入购物车成功！')
+         console.log("已经完成加入操作");
+        http.post('api/addcart', {
+           data:shop().cart,
+           shopid:usedata().shopselect.id
+        },).then(res => console.log(res.data.msg))
+        }
+       
     }
     else {
         showToast('请先登录，再加入购物车！');

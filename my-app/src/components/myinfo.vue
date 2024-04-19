@@ -38,7 +38,7 @@ const onSubmit = (values) => {
     console.log('submit', values.uploader[0].file);
     if ('objectUrl' in values.uploader[0]) {
         uploadImage(values.uploader[0].file);
-        userInfo().imgUrl = `http://192.168.10.105:3000/images/` + values.uploader[0].file.name;
+        userInfo().imgUrl = `http://121.36.193.95:3000/images/` + values.uploader[0].file.name;
     }
     http.post('api/freshdata', {
         nickname: userInfo().nickname,

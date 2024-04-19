@@ -1,20 +1,16 @@
 import { defineStore } from "pinia";
-import router from "../router";
-import http from "../utils/request";
 export const shop = defineStore('shop', {
-    persist: true,
     state: () => ({
-        data: [],
         taocan: [],
         shopselect: [],
         taocanprice: 0,
         choice: [],
+        cart:[]
 
     }),
     getters: {
         choicePrice() {
             // 使用 reduce 方法计算总价
-
             return this.choice.reduce((total, item) => {
                 // 确保商品的数量和单价都存在且为有效数字
                 if (typeof item.num === 'number' && typeof item.price === 'number' && item.num >= 0 && item.price >= 0) {
@@ -28,42 +24,59 @@ export const shop = defineStore('shop', {
                 return total;
             }, 0);
         },
-        refreshdata: (state) => {
-            let istrue = false
-            state.data.forEach(i => {
-                Object.values(i)[0].forEach(v => {
-                    if (v.num != 0) {
-                        istrue = true
-                    }
-                })
-            })
-            if (istrue) {
-                state.taocan = [],
-                    state.taocanprice = 0,
-                    state.choice = []
+        price0(state){
+            if(state.taocan.length==0){
+                state.taocanprice=0
             }
-
         }
+       
 
     },
 
     actions: {
-        getshopId(item) {
-            if (item) {
-                this.shopselect = item
-                http.get('api/getclass', {
-                    params: {
-                        shopid: item.id
-                    }
-                }).then(res => {
-
-                    this.data = res.data.data.sort((a, b) => {
-                        return a.classid - b.classid;
-                    });
-                    router.push('/detail')
-                })
-            }
-        },
-
+        
+      getcart(){
+        this.cart=this.choice.map(item => {
+            return {
+                id: item.id,
+                name: item.name,
+                price: item.newprice,
+                num:item.num,
+                img:item.img,
+                dec:'单品购买',
+                // 这里可以根据需要选择保留的字段
+            };
+        });
+        if(this.taocanprice==7){
+            this.cart.push({
+                id: -1,
+                name: this.taocan.map(item => `${item.name} * ${item.num}`).join(' + '),
+                price: 7,
+                num:1,
+                img:'http://121.36.193.95:3000/images/一荤一素.jpg',
+                dec: '商品id: '  +this.taocan.map(item => `${item.id} `).join(' 、')
+            })
+        }
+        else if(this.taocanprice==8){
+            this.cart.push({
+                id: -2,
+                name: this.taocan.map(item => `${item.name} * ${item.num}`).join(' + '),
+                price: 8,
+                num:1,
+                img:'http://121.36.193.95:3000/images/一荤两素.jpg' ,
+                dec:  '商品id: '  +this.taocan.map(item => `${item.id} `).join(' 、')
+            })
+        }
+        else if(this.taocanprice==9){
+            this.cart.push({
+                id: -3,
+                name: this.taocan.map(item => `${item.name} * ${item.num}`).join(' + '),
+                price: 9,
+                num:1,
+                img:'http://121.36.193.95:3000/images/两荤一素.png'   ,
+                dec:'商品id: '  +this.taocan.map(item => `${item.id} `).join(' 、')
+            })
+        }
+      }
     }
 })

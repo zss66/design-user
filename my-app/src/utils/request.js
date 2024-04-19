@@ -4,6 +4,7 @@ import webconfig from './global.config'
 import { usedata } from "../pinia/data";
 import { ref } from "vue";
 import { userInfo } from "../pinia/userinfo";
+import router from "../router";
 
 const http = axios.create({
     timeout: 10000,
@@ -72,6 +73,13 @@ http.interceptors.response.use(function (response) {
 }, function (error) {
     // 超出 2xx 范围的状态码都会触发该函数。
     // 对响应错误做点什么
+    // console.log(error.response.status==500);
+    if(error.response.status==500){
+        showToast('当前登录状态已失效，请重新登录');
+        userInfo().loginstatus = false;
+        userInfo().nologin;
+        router.push('/login')
+    }
     return Promise.reject(error);
 });
 export default http

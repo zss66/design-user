@@ -2,14 +2,14 @@
     <div class="container">
         <van-sticky offset-top="99px" class="left">
             <van-sidebar v-model="sideactive">
-                <van-sidebar-item :title="item" v-for="(item, index) in shop().data.map(item => Object.keys(item)[0])  "
+                <van-sidebar-item :title="item" v-for="(item, index) in usedata().data.map(item => Object.keys(item)[0])  "
                     :key="item" @click="scrollToTab(index)" />
             </van-sidebar>
         </van-sticky>
 
         <div style="padding-bottom: 50vh;" class="right">
 
-            <div class="blocks" v-for="(item, index) in shop().data" :key="index" :id="index">
+            <div class="blocks" v-for="(item, index) in usedata().data" :key="index" :id="index">
                 <smalltitle :smalltitle="Object.keys(item)[0]" class="title">
                 </smalltitle>
                 <div class="list" v-for="listitem in item[Object.keys(item)[0]]" :key="listitem.id">
@@ -38,6 +38,7 @@
 </template>
 <script setup>
 import { shop } from '../../pinia/shop';
+import { usedata } from '../../pinia/data';
 import smalltitle from '../../components/home/smalltitle.vue';
 import { ref } from 'vue';
 import http from '../../utils/request';
@@ -65,6 +66,7 @@ function compareAndUpdateArray(arr, obj) {
             isin = true
             arr[i].num = obj.num
             if (arr[i].num <= 0) {
+                console.log(arr[i]);  
                 arr.splice(i, 1);
             }
             return;
@@ -103,7 +105,35 @@ const yanzhen = (is) => {
     let i = { ...is }
     //业务提醒，询问顾客是否要选择套餐，如果选择的话，开启限制，如果不选择，不处理，按单价购买
     if ((i.type == 1 || i.type == 2)) {
-        compareAndUpdateArray(shop().taocan, i)
+        let ist =true
+        shop().taocan.forEach(it=>{
+            if(it.id==i.id&&i.num<it.num&&sumNumsByType(shop().taocan, 1) + sumNumsByType(shop().taocan, 2)==3){
+                console.log(i.num);
+                console.log(it.num);
+                
+                console.log(ist);
+                ist=false
+                compareAndUpdateArray(shop().taocan, i)
+            }
+        })
+        if(ist){
+            if(sumNumsByType(shop().taocan, 1) + sumNumsByType(shop().taocan, 2) > 2){
+            swal({
+                title: "超出套餐数量",
+                text: "超出套餐数量后，再次添加只能按照原价购买！",
+                icon: "info",
+            });
+            shop().taocan.forEach(item=>{
+            if(item.id==i.id){
+                i.num=i.num-item.num
+            }
+        })
+            compareAndUpdateArray(shop().choice, i)
+        }
+        else{
+            compareAndUpdateArray(shop().taocan, i)
+        }
+        }
         if (sumNumsByType(shop().taocan, 1) + sumNumsByType(shop().taocan, 2) < 2) {
             swal({
                 title: "套餐菜品提示",
@@ -112,20 +142,21 @@ const yanzhen = (is) => {
             });
 
         }
-        else if (sumNumsByType(shop().taocan, 1) + sumNumsByType(shop().taocan, 2) > 3) {
-            swal({
-                title: "超出套餐数量",
-                text: "超出套餐数量后，再次添加只能按照原价购买！",
-                icon: "info",
-            });
-            compareAndUpdateArray(shop().choice, i)
-
-        }
+    
         if (sumNumsByType(shop().taocan, 1) == 1 && sumNumsByType(shop().taocan, 2) == 1) {
 
             console.log('当前为一荤一素套餐，选择的餐品为', shop().taocan);
             shop().taocanprice = 7;
         }
+        else if (sumNumsByType(shop().taocan, 1) == 2 && sumNumsByType(shop().taocan, 2) == 0) {
+
+
+shop().taocanprice = 0;
+} else if (sumNumsByType(shop().taocan, 1) == 0 && sumNumsByType(shop().taocan, 2) == 2) {
+
+
+shop().taocanprice = 0;
+}
         else if (sumNumsByType(shop().taocan, 1) == 2 && sumNumsByType(shop().taocan, 2) == 1) {
             console.log('当前为一荤两素套餐，选择的餐品为', shop().taocan);
             shop().taocanprice = 8;
@@ -135,8 +166,10 @@ const yanzhen = (is) => {
             shop().taocanprice = 9;
             console.log('当前为两荤一素套餐，选择的餐品为', shop().taocan);
         }
+       
     }
     else {
+        
         compareAndUpdateArray(shop().choice, i)
     }
 }

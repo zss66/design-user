@@ -15,7 +15,7 @@
     </div>
     <div class="paystyle">
         <div>支付方式：</div>
-        <van-radio-group v-model="checked" direction="horizontal">
+        <van-radio-group v-model="payway" direction="horizontal">
             <van-radio name="1">微信支付</van-radio>
             <van-radio name="2">支付宝</van-radio>
         </van-radio-group>
@@ -63,7 +63,7 @@ import { path } from '../../pinia/path';
 import router from '../../router';
 provide('title', '提交订单')
 const chosenAddressId = ref('1');
-const checked = ref(0)
+const payway = ref('1')
 const showalert = ref(false)
 const qrdata = ref('');
 let paysuccess = 0
@@ -89,6 +89,7 @@ const creatorder = () => {
         http.post('api/creatorder', {
             order_id,
             goods: goods,
+            payway:payway.value,
             path: path().checkid
         }).then(res => {
             console.log(res);
