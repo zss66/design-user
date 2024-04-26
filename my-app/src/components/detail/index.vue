@@ -149,7 +149,7 @@
                 </div>
                 <div>
                     <van-button type="warning" style="padding: 0 15px;border-radius: 0;">套餐{{ shop().taocanprice }}+单品{{
-                shop().choicePrice }}</van-button>
+                        shop().choicePrice }}</van-button>
                     <van-button type="danger" @click="addcart"
                         style="padding: 0 15px;border-radius: 0;">加入购物车</van-button>
                 </div>
@@ -195,6 +195,7 @@ window.addEventListener('beforeunload', function (event) {
             v.num = 0
         })
     })
+    shop().refreshdata()
 
     // 为了确保浏览器显示默认的提示消息，你可以返回一个字符串
     // 这个字符串将被浏览器用于显示给用户的提示信息
@@ -228,8 +229,8 @@ const addcart = () => {
                         value: "catch",
                     },
                     defeat: {
-                        text:"继续添加",
-                        value:"defeat"
+                        text: "继续添加",
+                        value: "defeat"
                     },
                 },
             }).then((value) => {
@@ -237,35 +238,37 @@ const addcart = () => {
                     case "defeat":
                         break;
                     case "catch":
-                        shop().taocan.forEach(ele=>{
+                        shop().taocan.forEach(ele => {
                             shop().choice.push(ele)
                         })
-                        shop().taocan=[]
+                        shop().taocan = []
                         console.log(shop().choice);
                         swal("提示", "当前为非套餐模式", "success");
                         shop().getcart()
-         showToast('加入购物车成功！')
-         console.log("已经完成加入操作");
-        http.post('api/addcart', {
-           data:shop().cart,
-           shopid:usedata().shopselect.id
-        },).then(res => console.log(res.data.msg))
+                        showToast('加入购物车成功！')
+                        console.log("已经完成加入操作");
+                        http.post('api/addcart', {
+                            data: shop().cart,
+                            shopid: usedata().shopselect.id
+                        },).then(res => console.log(res.data.msg))
+                        router.push('/cart')
                         break;
                     default:
                         swal("当前未选择，无法进行下一步");
                 }
             });;
         }
-        else{
+        else {
             shop().getcart()
-         showToast('加入购物车成功！')
-         console.log("已经完成加入操作");
-        http.post('api/addcart', {
-           data:shop().cart,
-           shopid:usedata().shopselect.id
-        },).then(res => console.log(res.data.msg))
+            showToast('加入购物车成功！')
+            console.log("已经完成加入操作");
+            http.post('api/addcart', {
+                data: shop().cart,
+                shopid: usedata().shopselect.id
+            },).then(res => console.log(res.data.msg))
+            router.push('/cart')
         }
-       
+
     }
     else {
         showToast('请先登录，再加入购物车！');

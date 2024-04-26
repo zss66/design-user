@@ -1,33 +1,48 @@
+<!--
+ * @Author: zss zjb520zll@gmail.com
+ * @Date: 2024-03-21 15:10:24
+ * @LastEditors: zss zjb520zll@gmail.com
+ * @LastEditTime: 2024-04-24 09:26:27
+ * @FilePath: /desktop-tutorial/my-app/src/components/myorder/index.vue
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
 <template>
     <headeritem></headeritem>
     <van-tabs v-model:active="active" swipeable>
-        <van-tab v-for="(items, index) in order().ordertab" :title="items" :key="index">
-            <div v-for="item in order().orderlist[index]" :key="index" style="display:flex;">
-                <van-card :price="item.goods_price" desc="描述信息" :title="item.goods_name" :thumb="item.goods_imgUrl"
-                    style="flex:1" :num="item.goods_num">
-                    <template #tags>
-                        <van-tag plain type="primary">{{ order().ordertab[item.order_status - 1] }}</van-tag>
-                        <van-tag plain type="primary">{{ item.order_id }}</van-tag>
+        <van-tab v-for="(items, index) in order().ordertab" :title="items" :key="index"
+            style="background-color: antiquewhite;">
+            <!-- 遍历分组后的订单列表 -->
+            <div v-for="(group, orderId) in groupedOrders(order().orderlist[index])" :key="orderId"
+                style="margin: 20px 5px; border-radius: 20px; background-color: #fff;">
+                <!-- 显示订单信息 -->
+                <div v-for="item in group" :key="item.order_id">
+                    <!-- 这里放你的 van-card 组件 -->
 
-                    </template>
-                    <template #footer>
-                        <div v-if="item.order_status == 2"
-                            @click="payorder(item.order_id, cart().data.data.filter(itema => itema.id == item.cartid), item.payurl)">
-                            <van-button size="mini">去付款</van-button>
-                        </div>
-                        <div v-if="item.order_status == 3"
-                            @click="okpay(item.order_id)">
-                            <van-button size="mini">确认收货</van-button>
-                        </div>
+                    <van-card :price="item.goods_price" desc="描述信息" :title="item.goods_name" :thumb="item.goods_imgUrl"
+                        style="flex:1" :num="item.goods_num">
+                        <template #tags>
+                            <van-tag plain type="primary">{{ order().ordertab[item.order_status - 1] }}</van-tag>
+                            <van-tag plain type="primary">{{ item.order_id }}</van-tag>
+                        </template>
+                        <template #footer>
+                            <div v-if="item.order_status == 2"
+                                @click="payorder(item.order_id, cart().data.data.filter(itema => itema.id == item.cartid), item.payurl)">
+                                <van-button size="mini">去付款</van-button>
+                            </div>
+                            <div v-if="item.order_status == 3" @click="okpay(item.order_id)">
+                                <van-button size="mini">确认收货</van-button>
+                            </div>
+                        </template>
+                    </van-card>
 
-                    </template>
-                </van-card>
+                </div>
 
             </div>
         </van-tab>
     </van-tabs>
     <van-dialog v-model:show="showalert" title="支付宝扫码支付" :showConfirmButton=false
-        style="display: flex; justify-content: center;flex-direction: column;align-items: center;" close-on-click-overlay>
+        style="display: flex; justify-content: center;flex-direction: column;align-items: center;"
+        close-on-click-overlay>
         <qrcode :value=qrdata color: :size="200" style="margin-bottom: 30px;" type="image/png" color="#fff"></qrcode>
     </van-dialog>
 </template>
@@ -48,6 +63,19 @@ const okpay = (id) => {
     http.post('api/okpay', { id: id }).then(res => {
         console.log(res.data)
     })
+}
+const groupedOrders = (items) => {
+    const grouped = {};
+    // 遍历订单列表
+    items.forEach(item => {
+        // 如果分组中已经有该订单 ID，则将订单添加到分组中，否则创建一个新的分组
+        if (grouped[item.order_id]) {
+            grouped[item.order_id].push(item);
+        } else {
+            grouped[item.order_id] = [item];
+        }
+    });
+    return grouped;
 }
 const payorder = (id, goods, url) => {
     showalert.value = true;

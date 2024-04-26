@@ -1,12 +1,21 @@
+/*
+ * @Author: zss zjb520zll@gmail.com
+ * @Date: 2024-04-19 13:31:24
+ * @LastEditors: zss zjb520zll@gmail.com
+ * @LastEditTime: 2024-04-26 16:13:15
+ * @FilePath: /desktop-tutorial/my-app/src/pinia/data.js
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import { defineStore } from 'pinia'
 import router from '../router'
 import http from '../utils/request'
+import { shop } from './shop'
 export const usedata = defineStore('data', {
     persist: true,
     state: () => ({
         searchlist: {},
         //shoper data
-        data:[],
+        data: [],
         renew: true,
         bol: false,
         active_footer: 0,
@@ -20,6 +29,7 @@ export const usedata = defineStore('data', {
         showitem: '',
         search: [],
         shopselect: [],
+        shopoffer: [],
         //创建list-tab的active
         list_act: 0,
         //响应状态---用于过渡动画
@@ -27,8 +37,8 @@ export const usedata = defineStore('data', {
     })
     ,
     getters: {
-    }
-    ,
+
+    },
     actions: {
         getdata() {
             http.get('api/data').then(res => {
@@ -40,17 +50,22 @@ export const usedata = defineStore('data', {
                 // this.like = res.data.data.like;
             })
         },
+        shopoffers() {
+            this.shopoffer = this.shopselect.offer.split(',')
+        },
         getshopId(item) {
             if (item) {
                 this.shopselect = item
-                
+
                 http.get('api/getclass', {
                     params: {
                         shopid: item.id
                     }
                 }).then(res => {
                     this.data = res.data.data.sort((a, b) => {
-                        return parseInt(a.classid) -  parseInt(b.classid)})
+                        return parseInt(a.classid) - parseInt(b.classid)
+                    })
+                    shop().refreshdata()
                     router.push('/detail')
                 })
             }
@@ -69,6 +84,8 @@ export const usedata = defineStore('data', {
         },
 
     },
+    //获取商家提供的服务
+
     //获取分类数据接口
     items() {
         http.get('item').then(res => {
