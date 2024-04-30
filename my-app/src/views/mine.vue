@@ -1,3 +1,11 @@
+<!--
+ * @Author: zss zjb520zll@gmail.com
+ * @Date: 2024-03-21 15:10:24
+ * @LastEditors: zss zjb520zll@gmail.com
+ * @LastEditTime: 2024-04-30 17:51:50
+ * @FilePath: /desktop-tutorial/my-app/src/views/mine.vue
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
 <template>
     <headeritem>
     </headeritem>
@@ -8,7 +16,7 @@
         </div>
         <van-button @click="router.push('/login')" v-else>注册/登录</van-button>
     </header>
-    <van-tabs v-model:active="active" swipeable @click="router.push('/myorder')">
+    <van-tabs v-model:active="order().active" swipeable @click="router.push('/myorder')">
         <van-tab v-for="index in order().ordertab" :title="index">
         </van-tab>
     </van-tabs>
@@ -27,7 +35,6 @@ import { userInfo } from '../pinia/userinfo';
 import { storeToRefs } from 'pinia';
 import { onBeforeMount, ref } from 'vue';
 import { order } from '../pinia/order'
-const active = ref(0)
 if (userInfo().loginstatus) {
     userInfo().freshdata()
 }
