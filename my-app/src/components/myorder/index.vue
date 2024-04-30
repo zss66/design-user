@@ -2,13 +2,13 @@
  * @Author: zss zjb520zll@gmail.com
  * @Date: 2024-03-21 15:10:24
  * @LastEditors: zss zjb520zll@gmail.com
- * @LastEditTime: 2024-04-24 09:26:27
+ * @LastEditTime: 2024-04-30 17:56:44
  * @FilePath: /desktop-tutorial/my-app/src/components/myorder/index.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
     <headeritem></headeritem>
-    <van-tabs v-model:active="active" swipeable>
+    <van-tabs v-model:active="order().active" swipeable>
         <van-tab v-for="(items, index) in order().ordertab" :title="items" :key="index"
             style="background-color: antiquewhite;">
             <!-- 遍历分组后的订单列表 -->
@@ -17,7 +17,6 @@
                 <!-- 显示订单信息 -->
                 <div v-for="item in group" :key="item.order_id">
                     <!-- 这里放你的 van-card 组件 -->
-
                     <van-card :price="item.goods_price" desc="描述信息" :title="item.goods_name" :thumb="item.goods_imgUrl"
                         style="flex:1" :num="item.goods_num">
                         <template #tags>
@@ -29,9 +28,14 @@
                                 @click="payorder(item.order_id, cart().data.data.filter(itema => itema.id == item.cartid), item.payurl)">
                                 <van-button size="mini">去付款</van-button>
                             </div>
-                            <div v-if="item.order_status == 3" @click="okpay(item.order_id)">
+                            <div v-if="item.order_status < 6 && item.order_status > 2" @click="okpay(item.order_id)">
                                 <van-button size="mini">确认收货</van-button>
                             </div>
+                            <div v-if="item.order_status >= 6"
+                                @click="order().getshoperinfo(item.shopid); showCenter = true">
+                                <van-button size="mini">去评价</van-button>
+                            </div>
+
                         </template>
                     </van-card>
 
@@ -40,6 +44,37 @@
             </div>
         </van-tab>
     </van-tabs>
+    <van-popup v-model:show="showCenter" id="showpopup" round :style="{ padding: '20px' }">
+        <div>
+            <div style="display: flex; justify-content: center;">商品评价弹窗</div>
+            <div class="shopinfo" style="display: flex;margin: 10px 0;">
+                <div class="shopimg">
+                    <img :src="order().shoperinfo.showurl" alt="头像" style="width: 50px;border-radius: 50%;">
+                </div>
+                <div class="shopname" style="margin-left: 15px;">
+                    <div style="font-size: 18px;">
+                        {{ order().shoperinfo.title }}
+                    </div>
+                    <div style="font-size: 15px; color: #999;">
+                        {{ order().shoperinfo.shopdec }}
+                    </div>
+                </div>
+            </div>
+            <div class="score" style="display: flex; font-size: 15px;margin-left: 15px;">
+                <div class="goods">商品评分：</div>
+                <van-rate v-model="score_value" />
+            </div>
+            <van-cell-group inset style="margin: 0;">
+                <van-field v-model="message" rows="5" autosize label="评价:" type="textarea" maxlength="50" style=""
+                    label-width="35" placeholder="请留下你的就餐心得❤️" show-word-limit />
+            </van-cell-group>
+            <div style="width: 100%; display: flex;">
+                <van-button style="flex: 1; " plain type="primary">取消</van-button>
+                <div style="flex: 0.5;"></div>
+                <van-button style="flex: 1;" plain type="success">提交</van-button>
+            </div>
+        </div>
+    </van-popup>
     <van-dialog v-model:show="showalert" title="支付宝扫码支付" :showConfirmButton=false
         style="display: flex; justify-content: center;flex-direction: column;align-items: center;"
         close-on-click-overlay>
@@ -59,11 +94,21 @@ provide('title', '订单管理')
 order().getdata()
 const showalert = ref(false)
 const qrdata = ref('');
+const showCenter = ref(false)
+const score_value = ref(0)
+const message = ref('')
 const okpay = (id) => {
     http.post('api/okpay', { id: id }).then(res => {
         console.log(res.data)
     })
 }
+// 提交评价信息
+// const pjup = () => {
+//     http.post('api/goodspj', { shopid: order().shoperinfo.id, score: score_value.value, message: message.value }).then(res => {
+//         console.log(res.data)
+//     })
+// }
+
 const groupedOrders = (items) => {
     const grouped = {};
     // 遍历订单列表
@@ -119,4 +164,8 @@ const payorder = (id, goods, url) => {
     }, 5000);
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+#showpopup {
+    background-color: #fff;
+}
+</style>
