@@ -16,6 +16,7 @@ export const usedata = defineStore('data', {
         searchlist: {},
         //shoper data
         data: [],
+        pj:[],
         renew: true,
         bol: false,
         active_footer: 0,
@@ -65,8 +66,16 @@ export const usedata = defineStore('data', {
                     this.data = res.data.data.sort((a, b) => {
                         return parseInt(a.classid) - parseInt(b.classid)
                     })
-                    shop().refreshdata()
+                    http.get('api/order/pj',{
+                        params:{
+                            shoperid:item.id
+                        }
+                    }).then(res=>{
+                       this.pj= res.data.data.list
+                       shop().refreshdata()
                     router.push('/detail')
+                    })
+                    
                 })
             }
         },
@@ -74,7 +83,6 @@ export const usedata = defineStore('data', {
         dbconnect(result) {
             http.get('api/goods/shoplist', {
                 params: {
-                    id: 1,
                     name: result
                 }
             }).then(res => {

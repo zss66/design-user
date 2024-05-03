@@ -31,8 +31,8 @@
                             <div v-if="item.order_status < 6 && item.order_status > 2" @click="okpay(item.order_id)">
                                 <van-button size="mini">确认收货</van-button>
                             </div>
-                            <div v-if="item.order_status >= 6"
-                                @click="order().getshoperinfo(item.shopid); showCenter = true">
+                            <div v-if="item.order_status >= 6&&item.orderpj!=1"
+                                @click="order().getshoperinfo(item.shopid); order_id= item.order_id; showCenter = true ;goodsdec=item.goods_name">
                                 <van-button size="mini">去评价</van-button>
                             </div>
 
@@ -69,9 +69,9 @@
                     label-width="35" placeholder="请留下你的就餐心得❤️" show-word-limit />
             </van-cell-group>
             <div style="width: 100%; display: flex;">
-                <van-button style="flex: 1; " plain type="primary">取消</van-button>
+                <van-button style="flex: 1; " plain type="primary" @click="showCenter=false">取消</van-button>
                 <div style="flex: 0.5;"></div>
-                <van-button style="flex: 1;" plain type="success">提交</van-button>
+                <van-button style="flex: 1;" plain type="success" @click="pjup()">提交</van-button>
             </div>
         </div>
     </van-popup>
@@ -83,11 +83,13 @@
 </template>
 <script setup>
 import Qrcode from 'vue-qrcode';
+import { showToast } from 'vant';
 import headeritem from '../header-bar/index.vue'
 import { order } from '../../pinia/order'
 import { provide } from 'vue';
 import { cart } from '../../pinia/cartinfo';
 import { ref } from 'vue';
+import { userInfo } from '../../pinia/userinfo';
 import router from '../../router';
 import http from '../../utils/request';
 provide('title', '订单管理')
@@ -95,19 +97,44 @@ order().getdata()
 const showalert = ref(false)
 const qrdata = ref('');
 const showCenter = ref(false)
-const score_value = ref(0)
+const score_value = ref(NaN)
 const message = ref('')
+const goodsdec=ref('')
+const order_id=ref(0)
 const okpay = (id) => {
     http.post('api/okpay', { id: id }).then(res => {
-        console.log(res.data)
+        showToast('收货成功，前往评价')
+        location.reload();
+        order().active=3
+
     })
 }
+function getCurrentDateTime() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+
+    const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    return formattedDateTime;
+}
 // 提交评价信息
-// const pjup = () => {
-//     http.post('api/goodspj', { shopid: order().shoperinfo.id, score: score_value.value, message: message.value }).then(res => {
-//         console.log(res.data)
-//     })
-// }
+const pjup = () => {
+    if(score_value.value&&message.value.length!=0){
+        http.post('api/goodspj', { role:1,orderid:order_id.value,shopid: order().shopid, score: score_value.value, message: message.value,username:userInfo().nickname,userimg:userInfo().imgUrl,goodsdec:goodsdec.value,times:getCurrentDateTime() }).then(res => {
+            
+            showToast(res.data.message)
+            showCenter.value=false
+    })
+    }
+    else{
+       showToast('评价信息填写不完整')
+    }
+   
+}
 
 const groupedOrders = (items) => {
     const grouped = {};

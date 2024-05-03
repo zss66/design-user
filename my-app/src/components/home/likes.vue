@@ -8,22 +8,19 @@
     </div>
 
     <div v-else class="contains">
-        <div class="contain" v-for="(item, index) in usedata().search" :key="index" @click="shop().getshopId(item.id)">
-            <img :src=item.imgUrl alt="png">
+        <div class="contain" v-for="(item, index) in usedata().search" :key="index" @click=" usedata().getshopId(item.id)">
+            <img :src=item.showurl alt="png">
             <div class="miaoshu">
-                <van-text-ellipsis :content=item.name style="font-weight:bolder;margin-bottom: 5px;" />
+                <van-text-ellipsis :content=item.title style="font-weight:bolder;margin-bottom: 5px;" />
                 <div class="shopdata">
-                     <div class="sore"><span>4.9</span>分</div>
-                     <div class="buynum">月售2000</div>
+                     <div class="sore"><span>{{ item.goal }}</span>分</div>
+                     <div class="buynum">月售{{ item.num }}</div>
                 </div>
                 <div class="eatstyle">
-                    <span>可堂食</span>
-                    <span>可打包</span>
-                    <span>支持预定</span>
-                    <span>限时开单</span>
+                    <span v-for="i in item.offer.split(',')">{{ i }}</span>
                 </div>
                 <div class="shopact">
-                    <span>到店送饮料</span>
+                    <span>{{ item.shopdec }}</span>
                 </div>
             </div>
         </div>

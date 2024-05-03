@@ -126,7 +126,6 @@ const dataCallback = (time) => {
     console.log(time);
     choicday.value = time.timezh
 }
-console.log(ordertime.value);
 let paysuccess = 0
 let oldorder = {
     id: '',
@@ -162,26 +161,38 @@ const content = [
     }
 ];
 
-// 动态生成时间列表（当天）
 function generateDynamicTimeList(startHour, startMinute) {
     const timeList = [];
+
+    // 获取当前时间
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
 
     // 如果当前时间已经过了今天最早的时间，将立即送达加入列表
     if (startHour > 8 || (startHour === 8 && startMinute >= 45)) {
         timeList.push({ "timestr": "立即送达" });
     }
 
-    // 从当前时间开始，每隔一个小时生成一个时间段，直到晚上8点
-    let hour = startHour + 1; // 从下一个小时开始
-    while (hour < 20) {
-        const timeString = `${padZero(hour)}:00-${padZero(hour + 1)}:00`;
-        timeList.push({ "timestr": timeString });
-        hour++;
+    // 如果当前时间超过晚上8点，则只能预约明天的时间
+    if (currentHour >= 20) {
+        // 明天的时间列表
+        const tomorrowList = generateStaticTimeList();
+        for (let i = 0; i < tomorrowList.length; i++) {
+            timeList.push(tomorrowList[i]);
+        }
+    } else {
+        // 从当前时间开始，每隔一个小时生成一个时间段，直到晚上8点
+        let hour = startHour + 1; // 从下一个小时开始
+        while (hour < 20) {
+            const timeString = `${padZero(hour)}:00-${padZero(hour + 1)}:00`;
+            timeList.push({ "timestr": timeString });
+            hour++;
+        }
     }
 
     return timeList;
 }
-
 // 动态生成时间描述（明天和后天）
 function generateDynamicTimeZh(offset) {
     const daysOfWeek = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
@@ -213,7 +224,7 @@ function padZero(num) {
 }
 
 const pathchange = () => {
-    switch (payway.value) {
+    switch (checked.value) {
         case '1':
             return '-1';
             break;
@@ -232,7 +243,7 @@ const order_time = () => {
         case '1':
             return {
                 type: '立即送达',
-                time: new Date()
+                time: choicday.value+'-'+'立即送达'
             };
 
         case '2':
@@ -273,7 +284,7 @@ const creatorder = () => {
                 goods: goods,
                 payway: payway.value,
                 ordertime: ordertime.value,
-                checked: checked.value,
+                checked:checked.value,
                 order_time: order_time(),
                 path: pathchange()
             }).then(res => {

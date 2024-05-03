@@ -8,7 +8,7 @@
 
         </template>
         <template #right>
-            <van-icon name="search" size="18" />
+            <van-icon name="search" size="18" @click="golist" />
         </template>
     </van-nav-bar>
     <div v-if="useRoute().name == 'slist'"><router-view>

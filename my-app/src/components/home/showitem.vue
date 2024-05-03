@@ -1,18 +1,19 @@
 <template>
-    <div class="contain" v-for="(item, index) in usedata().showitem.data" :key="index" @click="shop().getshopId(item.id)">
-        <div class="title">畅销款</div>
-        <img :src="item.imgUrl" alt="img">
+   <div>
+    <div class="contain" v-for="(item, index) in usedata().showitem.data" :key="index" @click=" usedata().getshopId(usedata().likes.data.filter(i => i.id ==item.id)[0])">
+        <div class="title">畅销商品  {{ item.id }}</div>
+        <img :src="item.imgUrl" alt="img" style="height: 100px;">
         <div class="miaoshu">
             <span>{{ item.name }}</span>
             <b>{{ item.content }}</b>
             <p>￥ {{ item.price }}</p>
         </div>
     </div>
+   </div>
 </template>
 <script setup>
 import { usedata } from '../../pinia/data';
 import { shop } from '../../pinia/shop';
-
 </script>
 <style lang="less" scoped>
 .contain {

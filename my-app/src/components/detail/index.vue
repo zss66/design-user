@@ -77,38 +77,44 @@
                 </van-sticky>
                 <sideswiper v-show="swiactive == 0"></sideswiper>
                 <div class="score" v-show="swiactive == 1">
-                    <div>
+                    <div style="padding-bottom: 20px;">
                         <div class="scorenum">
                             <div>
-                                5.00
+                                {{ usedata().shopselect.goal }}
                             </div>
                             <span>商品服务</span>
                         </div>
-                        <div>
+                        <div v-for="item in usedata().pj" :key="item.id" style="margin: 5px 0;">
                             <div style="display: flex;">
-                                <img src="../../assets/images/goods1.jpg" alt="头像"
+                                <img :src="item.userimg" alt="头像"
                                     style="width: 50px;height: 50px;border-radius: 50%;">
                                 <div style=" width: 100%;">
                                     <div style="display: flex; justify-content:space-between;">
                                         <div>
-                                            <span style="font-size: 15px;font-weight: 700;">微信用户 </span>
-                                            <van-rate v-model="rate" :size="12" color="#ffd21e" void-icon="star"
+                                            <span style="font-size: 15px;font-weight: 700;">{{ item.user }} </span>
+                                            <van-rate v-model="item.score" :size="12" color="#ffd21e" void-icon="star"
                                                 void-color="#eee" />
-                                            <div style="font-size: 12px; color: #999;">1件商品</div>
+                                            
                                         </div>
                                         <span style="font-size: 12px; color: #999;margin-top: 10px;">
-                                            2024-03-16 21:13:06
+                                            {{item.time}}
                                         </span>
+                                    </div>
+                                    <div style="font-size: 12px; color: #999; margin-left: 5px;margin-bottom: 10px;">{{ item.goodsdec }}</div>
+                                    <div
+                                        style="font-size: 12px; padding: 5px;background-color: #fff;border-radius: 5px;">
+                                        <span style="color: orangered;">用户评价：</span>
+                                        <span style="color: #999;">{{ item.Pj }}</span>
                                     </div>
                                     <div
                                         style="font-size: 12px; padding: 5px;background-color: #eee;border-radius: 5px;">
                                         <span style="color: orangered;">商家回复：</span>
-                                        <span style="color: #999;">感谢支持。</span>
+                                        <span style="color: #999;">{{ item.shoperpj }}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <van-divider style="margin: 20px 0;">没有更多了</van-divider>
+                        <van-divider style="margin: 40px 0;">没有更多了</van-divider>
                     </div>
 
 
@@ -134,12 +140,12 @@
         <!-- 底部信息 -->
         <van-sticky position="bottom"
             style="position: fixed;bottom: 0;width: 100vw; z-index: 2; background-color: #fff;">
-            <div style="display: flex;justify-content: space-between; margin-left: 15px;">
+            <div style="display: flex;justify-content: space-between;align-items: center; margin-left: 15px;">
                 <div class="footicon">
                     <van-icon name="service-o" />
                     <span>客服</span>
                 </div>
-                <div class="footicon">
+                <div class="footicon" @click="router.push('/cart')">
                     <van-icon name="cart-o" />
                     <span>购物车</span>
                 </div>

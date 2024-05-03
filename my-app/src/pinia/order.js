@@ -15,7 +15,8 @@ export const order = defineStore('order', {
         ordertab: ['全部', '待付款', '待收货', '已完成'],
         orderlist: [],
         active: 0,
-        shoperinfo: {}
+        shoperinfo: {},
+        shopid:null,
     })
     ,
     getters: {
@@ -32,6 +33,7 @@ export const order = defineStore('order', {
             })
         },
         getshoperinfo(id) {
+            this.shopid=id
             http.get('api/getshoperinfo', {
                 params: {
                     id: id

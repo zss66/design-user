@@ -1,5 +1,5 @@
 <template>
-    <div>这是searchlist
+    <div>
         <div class="bar">
             <div>综合</div>
             <div class="barlp">价格

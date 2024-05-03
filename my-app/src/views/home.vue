@@ -11,7 +11,7 @@
             <smalltitle :smalltitle="'爆款推荐'">
             </smalltitle>
             <showitem></showitem>
-            <smalltitle :smalltitle="'猜你喜欢'">
+            <smalltitle :smalltitle="'商家列表'">
             </smalltitle>
             <likev></likev>
         </div>
