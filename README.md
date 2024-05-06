@@ -1,16 +1,8 @@
-# Welcome to GitHub Desktop!
-
-This is your README. READMEs are where you can communicate what your project is and how to use it.
-
-Write your name on line 6, save it, and then head back to GitHub Desktop.
-
-设置时区：一旦你进入了容器的 shell 环境，可以根据容器的操作系统选择相应的命令来设置时区。
-对于基于 Debian/Ubuntu 的容器，可以使用以下命令：
-bash
-dpkg-reconfigure tzdata
-对于基于 CentOS/RedHat 的容器，可以使用以下命令：
-bash
-timedatectl set-timezone Asia/Shanghai
-退出容器：完成时区设置后，使用 exit 命令退出容器的 shell 环境。
-bash
-exit
+#代码说明
+##本代码主要是大学毕业设计---大学食堂系统的用户端
+！该代码仅用于学习使用，若用于其他目的，后果自负
+#代码使用方式
+1.pull本代码到本地
+2.使用npm insatll 安装依赖
+3.使用npm run dev 进行本地调试
+4.使用npm run build 对文件进行静态打包
