@@ -103,9 +103,10 @@ function sumNumsByType(arr, type) {
 
 
 const yanzhen = (is) => {
-    let i = { ...is }
+    let i = {...is }
     //业务提醒，询问顾客是否要选择套餐，如果选择的话，开启限制，如果不选择，不处理，按单价购买
     if ((i.type == 1 || i.type == 2)) {
+        console.log(i);
         let ist = true
         shop().taocan.forEach(it => {
             if (it.id == i.id && i.num < it.num && sumNumsByType(shop().taocan, 1) + sumNumsByType(shop().taocan, 2) == 3) {

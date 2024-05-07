@@ -53,7 +53,7 @@
                 <div class="containlike">
                     <img :src="usedata().shopselect.showurl" alt="png">
                     <div class="miaoshu">
-                        <van-text-ellipsis content='食堂点餐页面' style="font-weight:bolder;margin-bottom: 5px;" />
+                        <div  style="font-weight:bolder;margin-bottom: 5px;" >{{ usedata().shopselect.title }}</div>
                         <div class="shopdata">
                             <div class="sore"><span>{{ usedata().shopselect.goal }}</span>分</div>
                             <div class="buynum">月售{{ usedata().shopselect.num }}</div>
@@ -85,22 +85,24 @@
                             <span>商品服务</span>
                         </div>
                         <div v-for="item in usedata().pj" :key="item.id" style="margin: 5px 0;">
-                            <div style="display: flex;">
+                            <div style="display: flex;margin-top: 10px;">
                                 <img :src="item.userimg" alt="头像"
                                     style="width: 50px;height: 50px;border-radius: 50%;">
                                 <div style=" width: 100%;">
-                                    <div style="display: flex; justify-content:space-between;">
-                                        <div>
+                                    <div style="display: flex; justify-content:space-between;align-items: flex-start;">
+                                        
                                             <span style="font-size: 15px;font-weight: 700;">{{ item.user }} </span>
-                                            <van-rate v-model="item.score" :size="12" color="#ffd21e" void-icon="star"
-                                                void-color="#eee" />
                                             
-                                        </div>
-                                        <span style="font-size: 12px; color: #999;margin-top: 10px;">
+                                            
+                                        
+                                        <span style="font-size: 12px; color: #999;">
                                             {{item.time}}
                                         </span>
                                     </div>
-                                    <div style="font-size: 12px; color: #999; margin-left: 5px;margin-bottom: 10px;">{{ item.goodsdec }}</div>
+                                   
+                                    <div style="font-size: 12px; color: #999; margin-left: 5px;margin-top: 5px;">{{ item.goodsdec }}</div>
+                                    <van-rate v-model="item.score" :size="12" color="#ffd21e" void-icon="star"
+                                                void-color="#eee" />
                                     <div
                                         style="font-size: 12px; padding: 5px;background-color: #fff;border-radius: 5px;">
                                         <span style="color: orangered;">用户评价：</span>
@@ -256,8 +258,11 @@ const addcart = () => {
                         http.post('api/addcart', {
                             data: shop().cart,
                             shopid: usedata().shopselect.id
-                        },).then(res => console.log(res.data.msg))
-                        router.push('/cart')
+                        },).then(res => {console.log(res.data.msg)
+                            router.push('/cart')
+                        }
+                        )
+                        
                         break;
                     default:
                         swal("当前未选择，无法进行下一步");
@@ -271,8 +276,9 @@ const addcart = () => {
             http.post('api/addcart', {
                 data: shop().cart,
                 shopid: usedata().shopselect.id
-            },).then(res => console.log(res.data.msg))
-            router.push('/cart')
+            },).then(res => {console.log(res.data.msg)
+                            router.push('/cart')
+                        })
         }
 
     }

@@ -23,12 +23,12 @@ router.beforeEach((to) => {
     if (to.name === 'cart') {
         if (userInfo().loginstatus) {
             http.post('api/selectCart').then(res => {
-                console.log(res);
                 if (res.data.data.success) {
                     cart().data = res.data.data;
                     cart().statuschange();
                 }
             })
+            
         }
         else {
             showToast('当前为未登录状态，请前往登录')

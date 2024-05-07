@@ -28,8 +28,9 @@
                                 @click="payorder(item.order_id, cart().data.data.filter(itema => itema.id == item.cartid), item.payurl)">
                                 <van-button size="mini">去付款</van-button>
                             </div>
-                            <div v-if="item.order_status < 6 && item.order_status > 2" @click="okpay(item.order_id)">
-                                <van-button size="mini">确认收货</van-button>
+                            <div v-if="item.order_status < 6 && item.order_status > 2" >
+                                <van-button @click="okpay(item.order_id)" size="mini">确认收货</van-button>
+                                <van-button v-if="item.order_code" size="mini">取餐码：{{ item.order_code }}</van-button>
                             </div>
                             <div v-if="item.order_status >= 6&&item.orderpj!=1"
                                 @click="order().getshoperinfo(item.shopid); order_id= item.order_id; showCenter = true ;goodsdec=item.goods_name">

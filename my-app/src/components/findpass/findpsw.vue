@@ -4,9 +4,9 @@
         <div>找回密码</div>
         <van-icon name="wap-home" />
     </header-bar>
-    <div style="margin-top:20px;" v-if="router.currentRoute.value.fullPath != '/find/newpsd'">
+    <div style="margin-top:20px; padding-bottom: 20px" v-if="router.currentRoute.value.fullPath != '/find/newpsd'">
         <van-form @submit="gonext()">
-            <van-cell-group inset>
+            <van-cell-group inset style="margin-bottom: 20px;">
                 <van-field v-model="value" name="phone" placeholder="请输入手机号"
                     :rules="[{ pattern: pattern1, message: '请输入正确内容' }]" />
                 <van-field v-model="sms" center clearable placeholder="请输入短信验证码"
@@ -70,7 +70,6 @@ const getcode = () => {
 provide('phone', value)
 provide('sms', sms)
 const gonext = () => {
-
     router.push({
         name: 'newpsd'
     })

@@ -9,8 +9,10 @@
     </van-form>
 </template>
 <script setup>
+import { showToast } from 'vant';
 import http from '../../utils/request'
 import { inject, ref } from 'vue';
+import router from '../../router';
 const psd = ref('')
 const psds = ref('')
 const pattern1 = /^(?=.*[a-zA-Z])(?=.*\d).{8,16}$/
@@ -25,7 +27,10 @@ const gonew = () => {
         sms: sms.value,
         psd: psd.value
     }).then(res => {
-        console.log(res);
+        showToast(res.data.msg)
+        if(res.data.code!=200){
+            router.push('/find')
+        }
     })
 }
 const failed = (err) => {

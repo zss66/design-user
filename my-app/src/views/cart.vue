@@ -73,6 +73,7 @@ provide('title', '购物车')
 const value = ref('编辑');
 const change = ref(false)
 console.log(cart().groupedCartData());
+
 const onSubmit1 = () => {
     // console.log(cart().checkShop());
     if (cart().selectdata.length > 0) {
